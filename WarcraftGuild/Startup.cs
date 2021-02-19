@@ -11,23 +11,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WarcraftGuild.BlizzardApi;
+using WarcraftGuild.BlizzardApi.Configuration;
+using WarcraftGuild.BlizzardApi.Interfaces;
+using WarcraftGuild.BlizzardApi.Models;
 
 namespace WarcraftGuild
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfigurationRoot Configuration { get; set; }
 
-        public IConfiguration Configuration { get; }
+        public Startup(IWebHostEnvironment hostEnv)
+        {
+            // Set up configuration sources.
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(hostEnv.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{hostEnv.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
+            services.Configure<BlizzardApiConfiguration>(options => Configuration.GetSection("BlizzardApi").Bind(options));
+            services.AddHttpClient();
+            services.AddSingleton<IBlizzardApiReader, BlizzardApiReader>();
+            services.AddSingleton<IWebClient, ApiWebClient>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WarcraftGuild", Version = "v1" });
