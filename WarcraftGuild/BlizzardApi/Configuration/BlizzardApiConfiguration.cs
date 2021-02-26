@@ -14,72 +14,28 @@ namespace WarcraftGuild.BlizzardApi.Configuration
         public Locale Locale { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public List<Limiter> Limiter { get; set; }
 
-        private const string AUTH_URL_TEMPLATE = "https://REGION.battle.net/oauth/token";
-        private const string API_URL_TEMPLATE = "https://REGION.api.blizzard.com";
-        private string authUrl = string.Empty;
-        private string apiUrl = string.Empty;
+        private const string AUTH_URL_TEMPLATE = "https://{REGION}.battle.net/oauth/token";
+        private const string API_URL_TEMPLATE = "https://{REGION}.api.blizzard.com";
+        private readonly string authUrl = string.Empty;
+        private readonly string apiUrl = string.Empty;
 
         public BlizzardApiConfiguration()
         {
-            SetRegion(Region.Europe, true);
-            Locale = ApiRegion.GetDefaultLocale();
+            apiUrl = API_URL_TEMPLATE.Replace("{REGION}", GetRegionString().ToLower());
+            authUrl = AUTH_URL_TEMPLATE.Replace("{REGION}", GetRegionString().ToLower());
         }
 
-        public static BlizzardApiConfiguration Create()
+        public bool AnyReachedLimit()
         {
-            return new BlizzardApiConfiguration();
+            return Limiter.Any(i => i.IsAtRateLimit());
         }
 
-        public BlizzardApiConfiguration SetClientId(string clientId)
+        public void NotifyAllLimits(BlizzardApiReader reader, IApiResponse responseMessage)
         {
-            ClientId = clientId;
-            return this;
-        }
-
-
-        public BlizzardApiConfiguration SetClientSecret(string clientSecret)
-        {
-            ClientSecret = clientSecret;
-            return this;
-        }
-
-        public BlizzardApiConfiguration SetRegion(Region region)
-        {
-            return SetRegion(region, false);
-        }
-
-        /// <summary>
-        /// Set the region of the ApiConfiguration with locale set to default locale of region if bool is set to true
-        /// </summary>
-        /// <param name="region">The region to set</param>
-        /// <param name="useDefaultLocale">Determines whether locale should be set based on default locale of region</param>
-        /// <returns>This instance of ApiConfiguration</returns>
-        public BlizzardApiConfiguration SetRegion(Region region, bool useDefaultLocale)
-        {
-            ApiRegion = region;
-            apiUrl = API_URL_TEMPLATE.Replace("REGION", GetRegionString());
-            authUrl = AUTH_URL_TEMPLATE.Replace("REGION", GetRegionString());
-            if (useDefaultLocale)
-            {
-                Locale = region.GetDefaultLocale();
-            }
-            return this;
-        }
-
-        public BlizzardApiConfiguration SetLocale(Locale locale)
-        {
-            Locale = locale;
-            return this;
-        }
-
-        /// <summary>
-        /// Declare this Configuration as the global default configuration, it will be used when no configuration is provided to the api reader.
-        /// </summary>  
-        public BlizzardApiConfiguration DeclareAsDefault()
-        {
-            BlizzardApiReader.SetDefaultConfiguration(this);
-            return this;
+            foreach (Limiter limit in Limiter)
+                limit.OnHttpRequest(reader, responseMessage);
         }
 
         public string GetLocaleString()

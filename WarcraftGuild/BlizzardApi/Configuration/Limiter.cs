@@ -6,7 +6,7 @@ using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Configuration
 {
-    public class TimeRateLimiter : IRateLimiter
+    public class Limiter
     {
         /// <summary>
         /// Time limiters that reset every DateTime, and allow only RatesPerDateTime requests
@@ -18,7 +18,13 @@ namespace WarcraftGuild.BlizzardApi.Configuration
         private DateTime timeUntilTheNextReset;
         private int currentRateCounter = 0;
 
-        public TimeRateLimiter(TimeSpan timeBetweenReset, int maxRatePerReset)
+        public Limiter()
+        {
+            currentRateCounter = 0;
+            CalculateAndSetNextReset();
+        }
+
+        public Limiter(TimeSpan timeBetweenReset, int maxRatePerReset)
         {
             TimeBetweenLimitReset = timeBetweenReset;
             RatesPerTimespan = maxRatePerReset;
@@ -44,9 +50,6 @@ namespace WarcraftGuild.BlizzardApi.Configuration
             currentRateCounter++;
         }
 
-        /// <summary>
-        ///  Calculate the next time the limiter reset and set it
-        /// </summary>
         private void CalculateAndSetNextReset()
         {
             timeUntilTheNextReset = DateTime.Now.Add(TimeBetweenLimitReset);
