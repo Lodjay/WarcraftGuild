@@ -17,7 +17,7 @@ namespace WarcraftGuild.BlizzardApi.Configuration
         public List<Limiter> Limiter { get; set; }
 
         private const string AUTH_URL_TEMPLATE = "https://{REGION}.battle.net/oauth/token";
-        private const string API_URL_TEMPLATE = "https://{REGION}.api.blizzard.com";
+        private const string API_URL_TEMPLATE = "https://{REGION}.api.blizzard.com/";
         private readonly string authUrl = string.Empty;
         private readonly string apiUrl = string.Empty;
 
