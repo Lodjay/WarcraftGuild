@@ -8,10 +8,6 @@ namespace WarcraftGuild.BlizzardApi.Configuration
 {
     public class Limiter
     {
-        /// <summary>
-        /// Time limiters that reset every DateTime, and allow only RatesPerDateTime requests
-        /// </summary>
-
         public int RatesPerTimespan { get; set; }
         public TimeSpan TimeBetweenLimitReset { get; set; }
 

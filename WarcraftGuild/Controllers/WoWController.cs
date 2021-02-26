@@ -6,34 +6,35 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
+using WarcraftGuild.Enums;
 using WarcraftGuild.Handlers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WarcraftGuild.Controllers
 {
-    [Route("account")]
+    [Route("wow")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class WoWController : ControllerBase
     {
         private readonly IBlizzardApiReader _blizzardApiReader;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IBlizzardApiReader blizzardApiReader, ILogger<AccountController> logger)
+        public WoWController(IBlizzardApiReader blizzardApiReader, ILogger<AccountController> logger)
         {
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateAccount([FromQuery] string token)
+        [HttpGet]
+        public async Task<IActionResult> GetQuery([FromQuery] string query)
         {
             try
             {
-                if (string.IsNullOrEmpty(token))
-                    return new JsonResult("Please add token to Query") { StatusCode = (int)HttpStatusCode.BadRequest };
-                await _blizzardApiReader.SendTokenRequest().ConfigureAwait(false);
-                return new JsonResult(string.Empty) { StatusCode = (int)HttpStatusCode.Created };
+                if (string.IsNullOrEmpty(query))
+                    return new JsonResult("Please add Query") { StatusCode = (int)HttpStatusCode.BadRequest };
+                var test = await _blizzardApiReader.GetJsonAsync(query, Namespace.Static).ConfigureAwait(false);
+                return new JsonResult(test) { StatusCode = (int)HttpStatusCode.OK };
             }
             catch (Exception ex) when (ex != null)
             {
