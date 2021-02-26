@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Configuration;
@@ -37,8 +38,12 @@ namespace WarcraftGuild
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             services.AddControllers();
-            services.Configure<BlizzardApiConfiguration>(options => Configuration.GetSection("BlizzardApi").Bind(options));
+            services.Configure<BlizzardApiConfiguration>(config => Configuration.GetSection("BlizzardApi").Bind(config));
             services.AddHttpClient();
             services.AddSingleton<IBlizzardApiReader, BlizzardApiReader>();
             services.AddSingleton<IWebClient, ApiWebClient>();

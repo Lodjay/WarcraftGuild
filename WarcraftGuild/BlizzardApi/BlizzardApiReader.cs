@@ -23,8 +23,6 @@ namespace WarcraftGuild.BlizzardApi
 
         protected static BlizzardApiConfiguration DefaultConfig { get; set; }
 
-        protected static LimitersList Limiters { get; } = new LimitersList();
-
         public static void SetDefaultConfiguration(BlizzardApiConfiguration configuration)
         {
             DefaultConfig = configuration;
@@ -57,7 +55,7 @@ namespace WarcraftGuild.BlizzardApi
                 await SendTokenRequest();
             string urlRequest = ParsePath(query, additionalParams);
             IApiResponse response = await _webClient.MakeApiRequestAsync(Configuration.GetApiUrl() + urlRequest);
-            Limiters.NotifyAll(this, response);
+            Configuration.NotifyAllLimits(this, response);
 
             if (response.IsSuccessful())
             {
@@ -85,14 +83,13 @@ namespace WarcraftGuild.BlizzardApi
             }
             if (response.StatusCode() == HttpStatusCode.Unauthorized)
                 throw new HttpRequestException("Unauthorized");
-            //TODO: Add better error handling
             throw new HttpRequestException("response code was not successful");
         }
 
         private void ThrowIfInvalidRequest()
         {
             VerifyConfigurationIsValid();
-            if (Limiters.AnyReachedLimit())
+            if (Configuration.AnyReachedLimit())
                 throw new RateLimitReachedException("http request was blocked by RateLimiter");
         }
 
