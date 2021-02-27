@@ -5,8 +5,7 @@ namespace WarcraftGuild.BlizzardApi.Interfaces
 {
     public interface IApiResponse
     {
-        HttpStatusCode StatusCode();
-        bool IsSuccessful();
+        HttpStatusCode GetStatusCode();
         Task<string> ReadContentAsync();
     }
 }

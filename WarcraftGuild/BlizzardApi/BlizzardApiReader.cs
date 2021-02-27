@@ -10,43 +10,23 @@ using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
 using WarcraftGuild.BlizzardApi.Models;
-using WarcraftGuild.Enums;
-using WarcraftGuild.Exceptions;
+using WarcraftGuild.Core.Enums;
+using WarcraftGuild.Core.Extensions;
+using WarcraftGuild.Core.Exceptions;
 
 namespace WarcraftGuild.BlizzardApi
 {
     public class BlizzardApiReader : IBlizzardApiReader
     {
         private readonly IWebClient _webClient;
+        private readonly BlizzardApiConfiguration _config;
         private string _token;
         private DateTime _tokenExpiration;
-        private BlizzardApiConfiguration ApiConfiguration;
-
-        protected static BlizzardApiConfiguration DefaultConfig { get; set; }
-
-        public static void SetDefaultConfiguration(BlizzardApiConfiguration configuration)
-        {
-            DefaultConfig = configuration;
-        }
-
-        public static void ClearDefaultConfiguration()
-        {
-            DefaultConfig = null;
-        }
-
-        public BlizzardApiConfiguration Configuration
-        {
-            get { return ApiConfiguration ?? DefaultConfig; }
-            set
-            {
-                ApiConfiguration = value;
-            }
-        }
 
         public BlizzardApiReader(IOptions<BlizzardApiConfiguration> apiConfiguration, IWebClient webClient)
         {
             _webClient = webClient;
-            Configuration = apiConfiguration.Value;
+            _config = apiConfiguration.Value;
         }
 
         public async Task<string> GetJsonAsync(string query, Namespace? ns = null, string additionalParams = null)
@@ -55,15 +35,15 @@ namespace WarcraftGuild.BlizzardApi
             if (HasTokenExpired())
                 await SendTokenRequest();
             string urlRequest = ParsePath(query, ns, additionalParams);
-            IApiResponse response = await _webClient.MakeApiRequestAsync(Configuration.GetApiUrl() + urlRequest);
-            Configuration.NotifyAllLimits(this, response);
-            switch (response.StatusCode())
+            IApiResponse response = await _webClient.MakeApiRequestAsync(_config.GetApiUrl() + urlRequest);
+            _config.NotifyAllLimits();
+            switch (response.GetStatusCode())
             {
                 case HttpStatusCode.OK:
                     string json = await response.ReadContentAsync();
                     return json;
                 default:
-                    throw new BadResponseException($"Get JSon fail : {response.StatusCode()}", response.StatusCode(), response);
+                    throw new BadResponseException($"Get JSON fail : {response.GetStatusCode()}", response.GetStatusCode(), response);
             }
         }
 
@@ -73,39 +53,49 @@ namespace WarcraftGuild.BlizzardApi
             if (HasTokenExpired())
                 await SendTokenRequest();
             string urlRequest = ParsePath(query, ns, additionalParams);
-            IApiResponse response = await _webClient.MakeApiRequestAsync(Configuration.GetApiUrl() + urlRequest);
-            Configuration.NotifyAllLimits(this, response);
-            switch (response.StatusCode())
+            IApiResponse response = await _webClient.MakeApiRequestAsync(_config.GetApiUrl() + urlRequest);
+            _config.NotifyAllLimits();
+            switch (response.GetStatusCode())
             {
                 case HttpStatusCode.OK:
                     string json = await response.ReadContentAsync();
                     return JsonSerializer.Deserialize<T>(json);
                 default:
-                    throw new BadResponseException($"Get {typeof(T)} fail : {response.StatusCode()}", response.StatusCode(), response);
+                    throw new BadResponseException($"Get {typeof(T)} fail : {response.GetStatusCode()}", response.GetStatusCode(), response);
             }
         }
 
         public async Task<string> SendTokenRequest()
         {
-            var response = await _webClient.RequestAccessTokenAsync();
-            switch (response.StatusCode())
+            IApiResponse response = await _webClient.RequestAccessTokenAsync();
+            switch (response.GetStatusCode())
             {
                 case HttpStatusCode.OK:
                     string json = await response.ReadContentAsync();
-                    ClientCredentials credentials = JsonSerializer.Deserialize<ClientCredentials>(json);
+                    AuthToken credentials = JsonSerializer.Deserialize<AuthToken>(json);
                     _token = credentials.AccessToken;
                     int expiresInSeconds = credentials.ExpiresIn;
                     _tokenExpiration = DateTime.Now.AddSeconds(expiresInSeconds);
                     return _token;
                 default:
-                    throw new HttpRequestException($"Send Token Error : {response.StatusCode()}");
+                    throw new HttpRequestException($"Send Token Error : {response.GetStatusCode()}");
             }
+        }
+
+        public async Task<IApiResponse> Authentificate()
+        {
+            IApiResponse response = await _webClient.RequestUserAuthorizeAsync();
+            return (response.GetStatusCode()) switch
+            {
+                HttpStatusCode.OK => response,
+                _ => throw new HttpRequestException($"Login Error : {response.GetStatusCode()}"),
+            };
         }
 
         private void ThrowIfInvalidRequest()
         {
             VerifyConfigurationIsValid();
-            if (Configuration.AnyReachedLimit())
+            if (_config.AnyReachedLimit())
                 throw new RateLimitReachedException("http request was blocked by RateLimiter");
         }
 
@@ -119,17 +109,17 @@ namespace WarcraftGuild.BlizzardApi
 
         private void VerifyConfigurationIsValid()
         {
-            if (Configuration == null || _webClient == null)
+            if (_config == null || _webClient == null)
                 throw new NullReferenceException("ApiConfiguration is not set, either declare one as global configuration or set a local instance configuration object.");
         }
 
         private string ParsePath(string query, Namespace? ns = null, string addtionalParams = null)
         {
             string path = ParseSpecialCharacters(query.Trim())
-                + "?locale=" + Configuration.GetLocaleString()
+                + "?locale=" + _config.GetLocaleString()
                 + "&access_token=" + _token;
             if (ns.HasValue)
-                path += $"&namespace={ns.Value.GetCode()}-{Configuration.GetRegionString().ToLower()}";
+                path += $"&namespace={ns.Value.GetCode()}-{_config.GetRegionString().ToLower()}";
             if (!string.IsNullOrEmpty(addtionalParams))
                 path += addtionalParams;
             return path;

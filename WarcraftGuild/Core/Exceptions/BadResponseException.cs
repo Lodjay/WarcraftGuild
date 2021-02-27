@@ -5,7 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Interfaces;
 
-namespace WarcraftGuild.Exceptions
+namespace WarcraftGuild.Core.Exceptions
 {
     public class BadResponseException : Exception
     {

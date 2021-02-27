@@ -38,7 +38,7 @@ namespace WarcraftGuild.BlizzardApi.Configuration
             return currentRateCounter >= RatesPerTimespan;
         }
 
-        public void OnHttpRequest(BlizzardApiReader reader, IApiResponse responseMessage)
+        public void OnHttpRequest()
         {
             if (IsReadyToReset())
                 ResetLimiter();

@@ -16,6 +16,8 @@ using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
 using WarcraftGuild.BlizzardApi.Models;
+using WarcraftGuild.WoW.Handlers;
+using WarcraftGuild.WoW.Interfaces;
 
 namespace WarcraftGuild
 {
@@ -25,17 +27,14 @@ namespace WarcraftGuild
 
         public Startup(IWebHostEnvironment hostEnv)
         {
-            // Set up configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(hostEnv.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{hostEnv.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().AddJsonOptions(options =>
@@ -46,6 +45,7 @@ namespace WarcraftGuild
             services.Configure<BlizzardApiConfiguration>(config => Configuration.GetSection("BlizzardApi").Bind(config));
             services.AddHttpClient();
             services.AddSingleton<IBlizzardApiReader, BlizzardApiReader>();
+            services.AddSingleton<IWoWHandler, WoWHandler>();
             services.AddSingleton<IWebClient, ApiWebClient>();
             services.AddSwaggerGen(c =>
             {
@@ -53,7 +53,6 @@ namespace WarcraftGuild
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
 using WarcraftGuild.BlizzardApi.Models;
-using WarcraftGuild.Enums;
-using WarcraftGuild.Exceptions;
+using WarcraftGuild.Core.Enums;
+using WarcraftGuild.Core.Exceptions;
 
 namespace WarcraftGuild.BlizzardApi
 {
@@ -18,6 +18,7 @@ namespace WarcraftGuild.BlizzardApi
     {
         Task<T> GetAsync<T>(string query, Namespace? ns = null, string additionalParams = null);
         Task<string> GetJsonAsync(string query, Namespace? ns = null, string additionalParams = null);
+        Task<IApiResponse> Authentificate();
         Task<string> SendTokenRequest();
     }
 }
