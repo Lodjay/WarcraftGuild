@@ -6,7 +6,7 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
     public class GuildJson
     {
         [JsonPropertyName("id")]
-        public long Id { get; set; }
+        public ulong Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }

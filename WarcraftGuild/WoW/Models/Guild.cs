@@ -9,23 +9,26 @@ namespace WarcraftGuild.WoW.Models
 {
     public class Guild
     {
-        public long BlizzardId { get; private set; }
+        public ulong BlizzardId { get; private set; }
         public string Name { get; private set; }
         public GuildCrest Crest { get; private set; }
         public Faction Faction { get; private set; }
         public DateTime CreationDate { get; private set; }
-        public int AchievementCount { get; private set; }
-        public int AchievementPoints { get; private set; }
+        public uint AchievementCount { get; private set; }
+        public uint AchievementPoints { get; private set; }
         public List<AchievementCompletion> Achievements { get; private set; }
+        public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; private set; }
 
         public Guild()
         {
             Achievements = new List<AchievementCompletion>();
+            AchievementCategoryCompletion = new List<AchievementCategoryCompletion>();
         }
 
         public Guild(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson, GuildActivityJson guildActivityJson, GuildRosterJson guildRosterJson)
         {
             Achievements = new List<AchievementCompletion>();
+            AchievementCategoryCompletion = new List<AchievementCategoryCompletion>();
             Load(guildJson, guildAchievementsJson, guildActivityJson, guildRosterJson);
         }
 
@@ -42,6 +45,10 @@ namespace WarcraftGuild.WoW.Models
                 Achievements.Clear();
             foreach (AchievmentCompletionJson achievmentCompletionJson in guildAchievementsJson.Achievements)
                 Achievements.Add(new AchievementCompletion(achievmentCompletionJson));
+            if (AchievementCategoryCompletion.Any())
+                AchievementCategoryCompletion.Clear();
+            foreach (AchievementCategoryCompletionJson achievementCategoryCompletionJson in guildAchievementsJson.CategoriesProgress)
+                AchievementCategoryCompletion.Add(new AchievementCategoryCompletion(achievementCategoryCompletionJson));
         }
     }
 }

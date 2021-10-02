@@ -5,7 +5,7 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
     public class ColorJson
     {
         [JsonPropertyName("id")]
-        public long Id { get; set; }
+        public ulong Id { get; set; }
 
         [JsonPropertyName("rgba")]
         public ColorCodeApiData ColorCode { get; set; }

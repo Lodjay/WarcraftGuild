@@ -6,7 +6,7 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
     public class AchievmentCompletionJson
     {
         [JsonPropertyName("id")]
-        public long Id { get; set; }
+        public ulong Id { get; set; }
 
         [JsonPropertyName("criteria")]
         public AchievementCriterionCompletionJson Criteria { get; set; }

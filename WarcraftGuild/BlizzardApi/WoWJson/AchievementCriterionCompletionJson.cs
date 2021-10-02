@@ -7,10 +7,10 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
     public class AchievementCriterionCompletionJson
     {
         [JsonPropertyName("id")]
-        public long Id { get; set; }
+        public ulong Id { get; set; }
 
         [JsonPropertyName("amount")]
-        public long Amount { get; set; }
+        public ulong Amount { get; set; }
 
         [JsonPropertyName("is_completed")]
         public bool IsCompleted { get; set; }
