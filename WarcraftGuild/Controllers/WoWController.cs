@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.Core.Enums;
-using WarcraftGuild.WoW.Handlers;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 

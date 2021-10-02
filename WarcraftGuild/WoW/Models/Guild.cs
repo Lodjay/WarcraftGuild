@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.WoWJson;
 using WarcraftGuild.Core.Extensions;
 using WarcraftGuild.WoW.Enums;

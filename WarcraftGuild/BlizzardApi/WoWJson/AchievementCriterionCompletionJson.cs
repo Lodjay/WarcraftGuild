@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.WoWJson
@@ -20,6 +17,5 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
 
         [JsonPropertyName("child_criteria")]
         public IEnumerable<AchievementCriterionCompletionJson> ChildCriteria { get; set; }
-
     }
 }

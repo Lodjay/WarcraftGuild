@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.WoWJson
 {
@@ -14,5 +10,4 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
         [JsonPropertyName("name")]
         public string Name { get; set; }
     }
-
 }

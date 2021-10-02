@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.WoWJson;
@@ -13,6 +11,7 @@ namespace WarcraftGuild.WoW.Handlers
     public class WoWHandler : IWoWHandler
     {
         private readonly IBlizzardApiReader _blizzardApiReader;
+
         public WoWHandler(IBlizzardApiReader blizzardApiReader)
         {
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Drawing;
+﻿using System.Drawing;
 using WarcraftGuild.BlizzardApi.WoWJson;
-using WarcraftGuild.Core.Extensions;
-using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -15,7 +9,9 @@ namespace WarcraftGuild.WoW.Models
         public GuildCrestBorder Border { get; private set; }
         public GuildCrestBackground Background { get; private set; }
 
-        public GuildCrest() { }
+        public GuildCrest()
+        {
+        }
 
         public GuildCrest(GuildCrestJson guildCrestJson)
         {
@@ -36,7 +32,9 @@ namespace WarcraftGuild.WoW.Models
 
         public Color Color { get; private set; }
 
-        public GuildCrestEmblem() { }
+        public GuildCrestEmblem()
+        {
+        }
 
         public GuildCrestEmblem(GuildCrestEmblemJson guildCrestEmblemJson)
         {
@@ -60,7 +58,9 @@ namespace WarcraftGuild.WoW.Models
 
         public Color Color { get; private set; }
 
-        public GuildCrestBorder() { }
+        public GuildCrestBorder()
+        {
+        }
 
         public GuildCrestBorder(GuildCrestBorderJson guildCrestBorderJson)
         {
@@ -78,12 +78,13 @@ namespace WarcraftGuild.WoW.Models
         }
     }
 
-
     public class GuildCrestBackground
     {
         public Color Color { get; private set; }
 
-        public GuildCrestBackground() { }
+        public GuildCrestBackground()
+        {
+        }
 
         public GuildCrestBackground(GuildCrestBackgroundJson guildCrestBackgroundJson)
         {

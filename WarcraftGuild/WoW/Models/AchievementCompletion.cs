@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Drawing;
 using WarcraftGuild.BlizzardApi.WoWJson;
-using WarcraftGuild.Core.Extensions;
-using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -15,13 +11,14 @@ namespace WarcraftGuild.WoW.Models
         public DateTime? CompletionDate { get; private set; }
         public AchievementCriterionCompletion Criteria { get; private set; }
 
-        public AchievementCompletion() { }
+        public AchievementCompletion()
+        {
+        }
 
-        public AchievementCompletion(AchievmentCompletionJson achievmentCompletionJson) 
+        public AchievementCompletion(AchievmentCompletionJson achievmentCompletionJson)
         {
             Load(achievmentCompletionJson);
         }
-
 
         public void Load(AchievmentCompletionJson achievmentCompletionJson)
         {
@@ -42,8 +39,7 @@ namespace WarcraftGuild.WoW.Models
         public bool IsCompleted { get; private set; }
         public List<AchievementCriterionCompletion> ChildCriteria { get; set; }
 
-
-        public AchievementCriterionCompletion() 
+        public AchievementCriterionCompletion()
         {
             ChildCriteria = new List<AchievementCriterionCompletion>();
         }

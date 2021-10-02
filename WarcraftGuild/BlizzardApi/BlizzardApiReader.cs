@@ -1,18 +1,15 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
 using WarcraftGuild.BlizzardApi.Models;
 using WarcraftGuild.Core.Enums;
-using WarcraftGuild.Core.Extensions;
 using WarcraftGuild.Core.Exceptions;
+using WarcraftGuild.Core.Extensions;
 
 namespace WarcraftGuild.BlizzardApi
 {
@@ -42,6 +39,7 @@ namespace WarcraftGuild.BlizzardApi
                 case HttpStatusCode.OK:
                     string json = await response.ReadContentAsync();
                     return json;
+
                 default:
                     throw new BadResponseException($"Get JSON fail : {response.GetStatusCode()}", response.GetStatusCode(), response);
             }
@@ -60,6 +58,7 @@ namespace WarcraftGuild.BlizzardApi
                 case HttpStatusCode.OK:
                     string json = await response.ReadContentAsync();
                     return JsonSerializer.Deserialize<T>(json);
+
                 default:
                     throw new BadResponseException($"Get {typeof(T)} fail : {response.GetStatusCode()}", response.GetStatusCode(), response);
             }
@@ -77,6 +76,7 @@ namespace WarcraftGuild.BlizzardApi
                     int expiresInSeconds = credentials.ExpiresIn;
                     _tokenExpiration = DateTime.Now.AddSeconds(expiresInSeconds);
                     return _token;
+
                 default:
                     throw new HttpRequestException($"Send Token Error : {response.GetStatusCode()}");
             }
