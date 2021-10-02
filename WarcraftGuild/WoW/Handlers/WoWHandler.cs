@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.BlizzardApi.WoWJson;
+using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
@@ -30,7 +30,13 @@ namespace WarcraftGuild.WoW.Handlers
                 GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmName}/{guildName} ", Namespace.Profile).ConfigureAwait(false);
                 GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmName}/{guildName}/achievements ", Namespace.Profile).ConfigureAwait(false);
                 GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmName}/{guildName}/roster ", Namespace.Profile).ConfigureAwait(false);
-                guild.Load(guildJson, guildAchievementsJson, guildRosterJson);
+                foreach (GuildMemberJson member in guildRosterJson.Members)
+                {
+                    CharacterJson character = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{realmName}/{member.Member.Name.ToLower()}", Namespace.Profile);
+                    member.Member.Character = character;
+                }
+                guild.Load(guildJson, guildAchievementsJson, guildRosterJson); 
+            
             }
             return guild;
         }

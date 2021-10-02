@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using WarcraftGuild.BlizzardApi.WoWJson;
+using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -28,7 +28,7 @@ namespace WarcraftGuild.WoW.Models
 
     public class GuildCrestEmblem
     {
-        public int BlizzardId { get; private set; }
+        public uint BlizzardId { get; private set; }
 
         public Color Color { get; private set; }
 
@@ -54,7 +54,7 @@ namespace WarcraftGuild.WoW.Models
 
     public class GuildCrestBorder
     {
-        public long BlizzardId { get; private set; }
+        public ulong BlizzardId { get; private set; }
 
         public Color Color { get; private set; }
 

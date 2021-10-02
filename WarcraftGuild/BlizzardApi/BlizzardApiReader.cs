@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
+using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.BlizzardApi.Models;
 using WarcraftGuild.Core.Enums;
 using WarcraftGuild.Core.Exceptions;
@@ -45,7 +46,7 @@ namespace WarcraftGuild.BlizzardApi
             }
         }
 
-        public async Task<T> GetAsync<T>(string query, Namespace? ns = null, string additionalParams = null)
+        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : BlizzardJson, new()
         {
             ThrowIfInvalidRequest();
             if (HasTokenExpired())
@@ -57,10 +58,16 @@ namespace WarcraftGuild.BlizzardApi
             {
                 case HttpStatusCode.OK:
                     string json = await response.ReadContentAsync();
-                    return JsonSerializer.Deserialize<T>(json);
+                    WoWJson result = JsonSerializer.Deserialize<WoWJson>(json);
+                    result.ResultCode = response.GetStatusCode();
+                    return result;
+
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.Forbidden:
+                    return new WoWJson() { ResultCode = response.GetStatusCode() };
 
                 default:
-                    throw new BadResponseException($"Get {typeof(T)} fail : {response.GetStatusCode()}", response.GetStatusCode(), response);
+                    throw new BadResponseException($"Get {typeof(WoWJson)} fail : {response.GetStatusCode()}", response.GetStatusCode(), response);
             }
         }
 

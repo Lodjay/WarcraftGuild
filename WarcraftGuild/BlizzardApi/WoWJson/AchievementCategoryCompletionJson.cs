@@ -1,9 +1,10 @@
 ﻿using System.Text.Json.Serialization;
+using WarcraftGuild.BlizzardApi.Interfaces;
 
-namespace WarcraftGuild.BlizzardApi.WoWJson
+namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class AchievementCategoryCompletionJson
+    public class AchievementCategoryCompletionJson : BlizzardJson
     {
         [JsonPropertyName("category")]
         public AchievmentCategoryIdJson Category { get; set; }
@@ -15,7 +16,7 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
         public uint Points { get; set; }
     }
 
-    public class AchievmentCategoryIdJson
+    public class AchievmentCategoryIdJson : BlizzardJson
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }

@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi.WoWJson;
+using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Extensions;
 using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class Character
+    public class Character : WoWData
     {
-        public ulong BlizzardId { get; private set; }
-        public string Name { get; private set; }
+        public ulong BlizzardId { get; protected set; }
+        public string Name { get; protected set; }
         public Faction Faction { get; private set; }
         public Gender Gender { get; private set; }
-        public int RaceID { get; private set; }
-        public int ClassID { get; private set; }
-        public int Level { get; private set; }
+        public uint RaceID { get; private set; }
+        public uint ClassID { get; private set; }
+        public ushort Level { get; private set; }
         public List<AchievementCompletion> Achievements { get; private set; }
         public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; private set; }
 
@@ -29,18 +29,34 @@ namespace WarcraftGuild.WoW.Models
 
         public Character(CharacterJson characterJson) : this()
         {
-            BlizzardId = characterJson.Id;
-            Name = characterJson.Name;
-            Faction = characterJson.Faction.Type.ParseCode<Faction>();
-            Gender = characterJson.Gender.Type.ParseCode<Gender>();
-            ClassID = characterJson.Class.Id;
-            RaceID = characterJson.Race.Id;
-            Level = characterJson.Level;
+            Load(characterJson);
         }
 
-        public Character(MemberJson memberJson) : this()
+        public Character(MemberJson memberJson) : this(memberJson.Character)
         {
-            BlizzardId = memberJson.Id;
+            Load(memberJson);
+        }
+
+        protected void Load(MemberJson memberJson)
+        {
+            if (CanLoadJson(memberJson))
+            {
+                BlizzardId = memberJson.Id;
+            }
+        }
+
+        protected void Load(CharacterJson characterJson)
+        {
+            if (CanLoadJson(characterJson))
+            {
+                BlizzardId = characterJson.Id;
+                Name = characterJson.Name;
+                Faction = characterJson.Faction.Type.ParseCode<Faction>();
+                Gender = characterJson.Gender.Type.ParseCode<Gender>();
+                ClassID = characterJson.Class.Id;
+                RaceID = characterJson.Race.Id;
+                Level = characterJson.Level;
+            }
         }
     }
 
@@ -53,9 +69,27 @@ namespace WarcraftGuild.WoW.Models
 
         }
 
-        public GuildMember(GuildMemberJson guildMemberJson) : base(guildMemberJson.Member)
+        public GuildMember(GuildMemberJson guildMemberJson) : base()
         {
-            Rank = guildMemberJson.Rank;
+            Load(guildMemberJson);
+        }
+
+        private void Load(GuildMemberJson guildMemberJson)
+        {
+            if (CanLoadJson(guildMemberJson))
+            {
+                Rank = guildMemberJson.Rank;
+                if (CanLoadJson(guildMemberJson.Member))
+                {
+                    if (CanLoadJson(guildMemberJson.Member.Character))
+                        Load(guildMemberJson.Member.Character);
+                    else
+                    {
+                        BlizzardId = guildMemberJson.Member.Id;
+                        Name = guildMemberJson.Member.Name;
+                    }
+                }
+            }
         }
     }
 }

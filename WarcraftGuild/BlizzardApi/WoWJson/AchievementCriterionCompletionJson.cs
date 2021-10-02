@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using WarcraftGuild.BlizzardApi.Interfaces;
 
-namespace WarcraftGuild.BlizzardApi.WoWJson
+namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class AchievementCriterionCompletionJson
+    public class AchievementCriterionCompletionJson : BlizzardJson
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }

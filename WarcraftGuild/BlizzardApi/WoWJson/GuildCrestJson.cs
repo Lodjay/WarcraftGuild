@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
+using WarcraftGuild.BlizzardApi.Interfaces;
 
-namespace WarcraftGuild.BlizzardApi.WoWJson
+namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class GuildCrestJson
+    public class GuildCrestJson : BlizzardJson
     {
         [JsonPropertyName("emblem")]
         public GuildCrestEmblemJson Emblem { get; set; }
@@ -14,25 +15,25 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
         public GuildCrestBackgroundJson Background { get; set; }
     }
 
-    public class GuildCrestEmblemJson
+    public class GuildCrestEmblemJson : BlizzardJson
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public uint Id { get; set; }
 
         [JsonPropertyName("color")]
         public ColorJson Color { get; set; }
     }
 
-    public class GuildCrestBorderJson
+    public class GuildCrestBorderJson : BlizzardJson
     {
         [JsonPropertyName("id")]
-        public long Id { get; set; }
+        public ulong Id { get; set; }
 
         [JsonPropertyName("color")]
         public ColorJson Color { get; set; }
     }
 
-    public class GuildCrestBackgroundJson
+    public class GuildCrestBackgroundJson : BlizzardJson
     {
         [JsonPropertyName("color")]
         public ColorJson Color { get; set; }

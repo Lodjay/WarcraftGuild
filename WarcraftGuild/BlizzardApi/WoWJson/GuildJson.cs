@@ -1,13 +1,13 @@
 ﻿using System.Text.Json.Serialization;
+using WarcraftGuild.BlizzardApi.Interfaces;
 
-namespace WarcraftGuild.BlizzardApi.WoWJson
+namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class GuildJson
+    public class GuildJson : BlizzardJson
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
-
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

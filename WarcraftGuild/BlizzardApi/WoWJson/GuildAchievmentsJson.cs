@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using WarcraftGuild.BlizzardApi.Interfaces;
 
-namespace WarcraftGuild.BlizzardApi.WoWJson
+namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class GuildAchievementsJson
+    public class GuildAchievementsJson : BlizzardJson
     {
         [JsonPropertyName("total_quantity")]
         public uint TotalQuantity { get; set; }

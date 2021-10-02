@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Drawing;
-using WarcraftGuild.BlizzardApi.WoWJson;
+using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Extensions;
 using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class AchievementCategoryCompletion
+    public class AchievementCategoryCompletion : WoWData
     {
         public ulong BlizzardId { get; private set; }
         public uint Quantity { get; private set; }
@@ -24,9 +24,12 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(AchievementCategoryCompletionJson achievementCategoryCompletionJson)
         {
-            BlizzardId = achievementCategoryCompletionJson.Category.Id;
-            Quantity = achievementCategoryCompletionJson.Quantity;
-            Points = achievementCategoryCompletionJson.Points;
+            if (CanLoadJson(achievementCategoryCompletionJson))
+            {
+                BlizzardId = achievementCategoryCompletionJson.Category.Id;
+                Quantity = achievementCategoryCompletionJson.Quantity;
+                Points = achievementCategoryCompletionJson.Points;
+            }
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using WarcraftGuild.BlizzardApi.Interfaces;
 
-namespace WarcraftGuild.BlizzardApi.WoWJson
+namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class CharacterJson
+    public class CharacterJson : BlizzardJson
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
@@ -25,7 +26,7 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
         public ClassJson Class { get; set; }
 
         [JsonPropertyName("level")]
-        public short Level { get; set; }
+        public ushort Level { get; set; }
     }
 
     public class GenderJson
@@ -39,8 +40,8 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
 
     public class RaceJson
     {
-        [JsonPropertyName("type")]
-        public int Id { get; set; }
+        [JsonPropertyName("id")]
+        public uint Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -48,8 +49,8 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
 
     public class ClassJson
     {
-        [JsonPropertyName("type")]
-        public int Id { get; set; }
+        [JsonPropertyName("id")]
+        public uint Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }

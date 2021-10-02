@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using WarcraftGuild.BlizzardApi.WoWJson;
+using System.Net;
+using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class AchievementCompletion
+    public class AchievementCompletion : WoWData
     {
         public ulong BlizzardId { get; private set; }
         public DateTime? CompletionDate { get; private set; }
@@ -22,17 +23,21 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(AchievmentCompletionJson achievmentCompletionJson)
         {
-            BlizzardId = achievmentCompletionJson.Id;
-            if (achievmentCompletionJson.CompletedTimestamp.HasValue)
-                CompletionDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(achievmentCompletionJson.CompletedTimestamp.Value);
-            else
-                CompletionDate = null;
-            if (achievmentCompletionJson.Criteria != null)
-                Criteria = new AchievementCriterionCompletion(achievmentCompletionJson.Criteria);
+            if (CanLoadJson(achievmentCompletionJson))
+            {
+                BlizzardId = achievmentCompletionJson.Id;
+                    if (achievmentCompletionJson.CompletedTimestamp.HasValue)
+                        CompletionDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(achievmentCompletionJson.CompletedTimestamp.Value);
+                    else
+                        CompletionDate = null;
+                    if (achievmentCompletionJson.Criteria != null)
+                        Criteria = new AchievementCriterionCompletion(achievmentCompletionJson.Criteria);
+                
+            }
         }
     }
 
-    public class AchievementCriterionCompletion
+    public class AchievementCriterionCompletion : WoWData
     {
         public ulong BlizzardId { get; private set; }
         public ulong Amount { get; private set; }
@@ -51,14 +56,17 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(AchievementCriterionCompletionJson achievementCriterionCompletionJson)
         {
-            BlizzardId = achievementCriterionCompletionJson.Id;
-            Amount = achievementCriterionCompletionJson.Amount;
-            IsCompleted = achievementCriterionCompletionJson.IsCompleted;
-            if (achievementCriterionCompletionJson.ChildCriteria != null && achievementCriterionCompletionJson.ChildCriteria.Any())
+            if (CanLoadJson(achievementCriterionCompletionJson))
             {
-                ChildCriteria = new List<AchievementCriterionCompletion>();
-                foreach (AchievementCriterionCompletionJson child in achievementCriterionCompletionJson.ChildCriteria)
-                    ChildCriteria.Add(new AchievementCriterionCompletion(child));
+                BlizzardId = achievementCriterionCompletionJson.Id;
+                Amount = achievementCriterionCompletionJson.Amount;
+                IsCompleted = achievementCriterionCompletionJson.IsCompleted;
+                if (achievementCriterionCompletionJson.ChildCriteria != null && achievementCriterionCompletionJson.ChildCriteria.Any())
+                {
+                    ChildCriteria = new List<AchievementCriterionCompletion>();
+                    foreach (AchievementCriterionCompletionJson child in achievementCriterionCompletionJson.ChildCriteria)
+                        ChildCriteria.Add(new AchievementCriterionCompletion(child));
+                }
             }
         }
     }
