@@ -6,8 +6,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.Enums;
-using WarcraftGuild.Handlers;
+using WarcraftGuild.Core.Enums;
+using WarcraftGuild.WoW.Handlers;
+using WarcraftGuild.WoW.Interfaces;
+using WarcraftGuild.WoW.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,24 +19,23 @@ namespace WarcraftGuild.Controllers
     [ApiController]
     public class WoWController : ControllerBase
     {
-        private readonly IBlizzardApiReader _blizzardApiReader;
-        private readonly ILogger<AccountController> _logger;
+        private readonly IWoWHandler _WoWHandler;
+        private readonly ILogger<WoWController> _logger;
 
-        public WoWController(IBlizzardApiReader blizzardApiReader, ILogger<AccountController> logger)
+        public WoWController(IWoWHandler WoWHandler, ILogger<WoWController> logger)
         {
-            _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
+            _WoWHandler = WoWHandler ?? throw new ArgumentNullException(nameof(WoWHandler));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        [Route("guild/{nameSlug}/{realmSlug}")]
         [HttpGet]
-        public async Task<IActionResult> GetQuery([FromQuery] string query)
+        public async Task<IActionResult> GetGuild([FromRoute] string nameSlug, [FromRoute] string realmSlug)
         {
             try
             {
-                if (string.IsNullOrEmpty(query))
-                    return new JsonResult("Please add Query") { StatusCode = (int)HttpStatusCode.BadRequest };
-                var test = await _blizzardApiReader.GetJsonAsync(query, Namespace.Static).ConfigureAwait(false);
-                return new JsonResult(test) { StatusCode = (int)HttpStatusCode.OK };
+                Guild guild = await _WoWHandler.GetGuild(realmSlug, nameSlug, true).ConfigureAwait(false);
+                return new JsonResult(guild) { StatusCode = (int)HttpStatusCode.OK };
             }
             catch (Exception ex) when (ex != null)
             {

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.Models
 {
-    public class ClientCredentials
+    public class AuthToken
     {
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }

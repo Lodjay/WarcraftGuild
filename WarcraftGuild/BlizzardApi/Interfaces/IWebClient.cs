@@ -6,5 +6,6 @@ namespace WarcraftGuild.BlizzardApi.Interfaces
     {
         Task<IApiResponse> MakeApiRequestAsync(string path);
         Task<IApiResponse> RequestAccessTokenAsync();
+        Task<IApiResponse> RequestUserAuthorizeAsync();
     }
 }

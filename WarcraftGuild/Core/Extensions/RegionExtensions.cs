@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WarcraftGuild.Core.Enums;
 
-namespace WarcraftGuild.Enums
+namespace WarcraftGuild.Core.Extensions
 {
     public static class RegionExtensions
     {

@@ -17,19 +17,14 @@ namespace WarcraftGuild.BlizzardApi.Models
             response = responseMessage;
         }
 
-        public HttpStatusCode StatusCode()
+        public HttpStatusCode GetStatusCode()
         {
             return response.StatusCode;
         }
 
-        public bool IsSuccessful()
-        {
-            return response.IsSuccessStatusCode;
-        }
-
         public async Task<string> ReadContentAsync()
         {
-            return await response.Content.ReadAsStringAsync();
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
     }

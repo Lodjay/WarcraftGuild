@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Interfaces;
 using WarcraftGuild.BlizzardApi.Models;
-using WarcraftGuild.Enums;
+using WarcraftGuild.Core.Enums;
 
 namespace WarcraftGuild.BlizzardApi.Configuration
 {
@@ -17,6 +17,10 @@ namespace WarcraftGuild.BlizzardApi.Configuration
         private readonly HttpClient _apiClient;
         private readonly HttpClient _authClient;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _authPath;
+        private readonly string _clientId;
+        private readonly string _redirectUrl;
+        private readonly FormUrlEncodedContent _authAccessTokenContent;
 
         public ApiWebClient(IHttpClientFactory httpClientFactory, IOptions<BlizzardApiConfiguration> apiConfiguration)
         {
@@ -24,21 +28,19 @@ namespace WarcraftGuild.BlizzardApi.Configuration
 
             _httpClientFactory = httpClientFactory;
 
-            authPath = _configuration.GetAuthUrl();
+            _authPath = _configuration.GetAuthUrl();
 
             _apiClient = ConfigureApiClient();
             _authClient = ConfigureAuthClient(AuthenticateHeader(_configuration.ClientId, _configuration.ClientSecret));
+            _clientId = _configuration.ClientId;
+            _redirectUrl = _configuration.RedirectUrl;
 
-        }
-
-
-        private readonly FormUrlEncodedContent _authRequestContent = new FormUrlEncodedContent(
+            _authAccessTokenContent = new FormUrlEncodedContent(
                 new Dictionary<string, string>
                 {
                     { "grant_type", "client_credentials" }
                 });
-
-        private readonly string authPath;
+        }
 
         public async Task<IApiResponse> MakeApiRequestAsync(string path)
         {
@@ -46,16 +48,15 @@ namespace WarcraftGuild.BlizzardApi.Configuration
             return new ApiResponse(response);
         }
 
+        public async Task<IApiResponse> RequestUserAuthorizeAsync()
+        {
+            var response = await _authClient.GetAsync($"{_authPath}authorize?client_id={_clientId}&redirect_uri={_redirectUrl}&response_type=code&scope=wow.profile");
+            return new ApiResponse(response);
+        }
+
         public async Task<IApiResponse> RequestAccessTokenAsync()
         {
-
-            FormUrlEncodedContent _authRequestContent = new FormUrlEncodedContent(
-                new Dictionary<string, string>
-                {
-                    { "grant_type", "client_credentials" }
-                });
-
-            var response = await _authClient.PostAsync(authPath, _authRequestContent);
+            var response = await _authClient.PostAsync(_authPath + "token", _authAccessTokenContent);
             return new ApiResponse(response);
         }
 
