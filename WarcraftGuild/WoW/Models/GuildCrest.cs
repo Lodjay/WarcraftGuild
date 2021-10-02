@@ -13,7 +13,7 @@ namespace WarcraftGuild.WoW.Models
         {
         }
 
-        public GuildCrest(GuildCrestJson guildCrestJson)
+        public GuildCrest(GuildCrestJson guildCrestJson) : this()
         {
             Load(guildCrestJson);
         }
@@ -36,7 +36,7 @@ namespace WarcraftGuild.WoW.Models
         {
         }
 
-        public GuildCrestEmblem(GuildCrestEmblemJson guildCrestEmblemJson)
+        public GuildCrestEmblem(GuildCrestEmblemJson guildCrestEmblemJson) : this()
         {
             Load(guildCrestEmblemJson);
         }
@@ -62,7 +62,7 @@ namespace WarcraftGuild.WoW.Models
         {
         }
 
-        public GuildCrestBorder(GuildCrestBorderJson guildCrestBorderJson)
+        public GuildCrestBorder(GuildCrestBorderJson guildCrestBorderJson) : this()
         {
             Load(guildCrestBorderJson);
         }
@@ -86,7 +86,7 @@ namespace WarcraftGuild.WoW.Models
         {
         }
 
-        public GuildCrestBackground(GuildCrestBackgroundJson guildCrestBackgroundJson)
+        public GuildCrestBackground(GuildCrestBackgroundJson guildCrestBackgroundJson) : this()
         {
             Load(guildCrestBackgroundJson);
         }

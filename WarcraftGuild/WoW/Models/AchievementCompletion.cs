@@ -15,7 +15,7 @@ namespace WarcraftGuild.WoW.Models
         {
         }
 
-        public AchievementCompletion(AchievmentCompletionJson achievmentCompletionJson)
+        public AchievementCompletion(AchievmentCompletionJson achievmentCompletionJson) : base()
         {
             Load(achievmentCompletionJson);
         }
@@ -44,7 +44,7 @@ namespace WarcraftGuild.WoW.Models
             ChildCriteria = new List<AchievementCriterionCompletion>();
         }
 
-        public AchievementCriterionCompletion(AchievementCriterionCompletionJson achievementCriterionCompletionJson)
+        public AchievementCriterionCompletion(AchievementCriterionCompletionJson achievementCriterionCompletionJson) : this()
         {
             Load(achievementCriterionCompletionJson);
         }

@@ -29,7 +29,7 @@ namespace WarcraftGuild.Controllers
         {
             try
             {
-                Guild guild = await _WoWHandler.GetGuild(realmSlug, nameSlug, true).ConfigureAwait(false);
+                Guild guild = await _WoWHandler.GetGuild(realmSlug.ToLower(), nameSlug.ToLower(), true).ConfigureAwait(false);
                 return new JsonResult(guild) { StatusCode = (int)HttpStatusCode.OK };
             }
             catch (Exception ex) when (ex != null)

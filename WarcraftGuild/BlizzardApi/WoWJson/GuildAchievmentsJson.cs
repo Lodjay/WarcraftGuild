@@ -16,11 +16,6 @@ namespace WarcraftGuild.BlizzardApi.WoWJson
         public IEnumerable<AchievmentCompletionJson> Achievements { get; set; }
 
         [JsonPropertyName("category_progress")]
-<<<<<<< HEAD
-        public IEnumerable<GuildAchievmentCategoryProgressJson> CategoriesProgress { get; set; }
-=======
         public IEnumerable<AchievementCategoryCompletionJson> CategoriesProgress { get; set; }
-
->>>>>>> f12ccfa... Get Guild + Achievements
     }
 }

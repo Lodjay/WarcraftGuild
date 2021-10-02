@@ -18,21 +18,21 @@ namespace WarcraftGuild.WoW.Models
         public uint AchievementPoints { get; private set; }
         public List<AchievementCompletion> Achievements { get; private set; }
         public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; private set; }
+        public List<GuildMember> Members { get; private set; }
 
         public Guild()
         {
             Achievements = new List<AchievementCompletion>();
             AchievementCategoryCompletion = new List<AchievementCategoryCompletion>();
+            Members = new List<GuildMember>();
         }
 
-        public Guild(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson, GuildActivityJson guildActivityJson, GuildRosterJson guildRosterJson)
+        public Guild(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson, GuildRosterJson guildRosterJson) : this()
         {
-            Achievements = new List<AchievementCompletion>();
-            AchievementCategoryCompletion = new List<AchievementCategoryCompletion>();
-            Load(guildJson, guildAchievementsJson, guildActivityJson, guildRosterJson);
+            Load(guildJson, guildAchievementsJson, guildRosterJson);
         }
 
-        public void Load(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson, GuildActivityJson guildActivityJson, GuildRosterJson guildRosterJson)
+        public void Load(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson,  GuildRosterJson guildRosterJson)
         {
             BlizzardId = guildJson.Id;
             Name = guildJson.Name;
@@ -49,6 +49,10 @@ namespace WarcraftGuild.WoW.Models
                 AchievementCategoryCompletion.Clear();
             foreach (AchievementCategoryCompletionJson achievementCategoryCompletionJson in guildAchievementsJson.CategoriesProgress)
                 AchievementCategoryCompletion.Add(new AchievementCategoryCompletion(achievementCategoryCompletionJson));
+            if (Members.Any())
+                Members.Clear();
+            foreach (GuildMemberJson member in guildRosterJson.Members)
+                Members.Add(new GuildMember(member));
         }
     }
 }

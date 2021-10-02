@@ -17,7 +17,7 @@ namespace WarcraftGuild.WoW.Models
 
         public AchievementCategoryCompletion() { }
 
-        public AchievementCategoryCompletion(AchievementCategoryCompletionJson achievementCategoryCompletionJson) 
+        public AchievementCategoryCompletion(AchievementCategoryCompletionJson achievementCategoryCompletionJson) : this()
         {
             Load(achievementCategoryCompletionJson);
         }
