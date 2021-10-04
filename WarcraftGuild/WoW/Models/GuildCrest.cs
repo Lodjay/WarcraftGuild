@@ -1,13 +1,12 @@
-﻿using System.Drawing;
-using WarcraftGuild.BlizzardApi.Json;
+﻿using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class GuildCrest
+    public class GuildCrest : WoWData
     {
-        public GuildCrestEmblem Emblem { get; private set; }
-        public GuildCrestBorder Border { get; private set; }
-        public GuildCrestBackground Background { get; private set; }
+        public GuildCrestEmblem Emblem { get; set; }
+        public GuildCrestBorder Border { get; set; }
+        public GuildCrestBackground Background { get; set; }
 
         public GuildCrest()
         {
@@ -23,81 +22,6 @@ namespace WarcraftGuild.WoW.Models
             Emblem = new GuildCrestEmblem(guildCrestJson.Emblem);
             Border = new GuildCrestBorder(guildCrestJson.Border);
             Background = new GuildCrestBackground(guildCrestJson.Background);
-        }
-    }
-
-    public class GuildCrestEmblem
-    {
-        public uint BlizzardId { get; private set; }
-
-        public Color Color { get; private set; }
-
-        public GuildCrestEmblem()
-        {
-        }
-
-        public GuildCrestEmblem(GuildCrestEmblemJson guildCrestEmblemJson) : this()
-        {
-            Load(guildCrestEmblemJson);
-        }
-
-        public void Load(GuildCrestEmblemJson guildCrestEmblemJson)
-        {
-            BlizzardId = guildCrestEmblemJson.Id;
-            Color = Color.FromArgb(
-                (int)(guildCrestEmblemJson.Color.ColorCode.A * 255),
-                guildCrestEmblemJson.Color.ColorCode.R,
-                guildCrestEmblemJson.Color.ColorCode.G,
-                guildCrestEmblemJson.Color.ColorCode.B);
-        }
-    }
-
-    public class GuildCrestBorder
-    {
-        public ulong BlizzardId { get; private set; }
-
-        public Color Color { get; private set; }
-
-        public GuildCrestBorder()
-        {
-        }
-
-        public GuildCrestBorder(GuildCrestBorderJson guildCrestBorderJson) : this()
-        {
-            Load(guildCrestBorderJson);
-        }
-
-        public void Load(GuildCrestBorderJson guildCrestBorderJson)
-        {
-            BlizzardId = guildCrestBorderJson.Id;
-            Color = Color.FromArgb(
-                (int)(guildCrestBorderJson.Color.ColorCode.A * 255),
-                guildCrestBorderJson.Color.ColorCode.R,
-                guildCrestBorderJson.Color.ColorCode.G,
-                guildCrestBorderJson.Color.ColorCode.B);
-        }
-    }
-
-    public class GuildCrestBackground
-    {
-        public Color Color { get; private set; }
-
-        public GuildCrestBackground()
-        {
-        }
-
-        public GuildCrestBackground(GuildCrestBackgroundJson guildCrestBackgroundJson) : this()
-        {
-            Load(guildCrestBackgroundJson);
-        }
-
-        public void Load(GuildCrestBackgroundJson guildCrestBackgroundJson)
-        {
-            Color = Color.FromArgb(
-                (int)(guildCrestBackgroundJson.Color.ColorCode.A * 255),
-                guildCrestBackgroundJson.Color.ColorCode.R,
-                guildCrestBackgroundJson.Color.ColorCode.G,
-                guildCrestBackgroundJson.Color.ColorCode.B);
         }
     }
 }

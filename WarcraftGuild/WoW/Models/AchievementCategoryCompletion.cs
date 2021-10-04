@@ -11,9 +11,8 @@ namespace WarcraftGuild.WoW.Models
 {
     public class AchievementCategoryCompletion : WoWData
     {
-        public ulong BlizzardId { get; private set; }
-        public uint Quantity { get; private set; }
-        public uint Points { get; private set; }
+        public uint Quantity { get; set; }
+        public uint Points { get; set; }
 
         public AchievementCategoryCompletion() { }
 

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
+using WarcraftGuild.Core.Helpers;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 
@@ -30,14 +33,22 @@ namespace WarcraftGuild.WoW.Handlers
                 GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmName}/{guildName} ", Namespace.Profile).ConfigureAwait(false);
                 GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmName}/{guildName}/achievements ", Namespace.Profile).ConfigureAwait(false);
                 GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmName}/{guildName}/roster ", Namespace.Profile).ConfigureAwait(false);
-                foreach (GuildMemberJson member in guildRosterJson.Members)
+                if (guildRosterJson != null)
                 {
-                    CharacterJson character = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{realmName}/{member.Member.Name.ToLower()}", Namespace.Profile);
-                    member.Member.Character = character;
+                    List<Task<CharacterJson>> tasks = new List<Task<CharacterJson>>();
+                    foreach (GuildMemberJson member in guildRosterJson.Members)
+                        if (member.Member != null)
+                            tasks.Add(_blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{realmName}/{member.Member.Name.ToLower()}", Namespace.Profile));
+                    CharacterJson[] results = await Task.WhenAll(tasks);
+                    foreach (CharacterJson result in results)
+                        if (result.Id > 0)
+                            guildRosterJson.Members.FirstOrDefault(x => x.Member != null && x.Member.Id == result.Id).Member.Character = result;
                 }
-                guild.Load(guildJson, guildAchievementsJson, guildRosterJson); 
-            
+                guild.Load(guildJson, guildAchievementsJson, guildRosterJson);
+                await Repository.Delete(guild);
+                await Repository.Insert(guild);
             }
+
             return guild;
         }
     }

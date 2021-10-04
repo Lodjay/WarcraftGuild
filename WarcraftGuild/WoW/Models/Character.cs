@@ -10,15 +10,14 @@ namespace WarcraftGuild.WoW.Models
 {
     public class Character : WoWData
     {
-        public ulong BlizzardId { get; protected set; }
-        public string Name { get; protected set; }
-        public Faction Faction { get; private set; }
-        public Gender Gender { get; private set; }
-        public uint RaceID { get; private set; }
-        public uint ClassID { get; private set; }
-        public ushort Level { get; private set; }
-        public List<AchievementCompletion> Achievements { get; private set; }
-        public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; private set; }
+        public string Name { get; set; }
+        public Faction Faction { get; set; }
+        public Gender Gender { get; set; }
+        public uint RaceID { get; set; }
+        public uint ClassID { get; set; }
+        public ushort Level { get; set; }
+        public List<AchievementCompletion> Achievements { get; set; }
+        public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; set; }
 
 
         public Character()
@@ -56,39 +55,6 @@ namespace WarcraftGuild.WoW.Models
                 ClassID = characterJson.Class.Id;
                 RaceID = characterJson.Race.Id;
                 Level = characterJson.Level;
-            }
-        }
-    }
-
-    public class GuildMember : Character
-    {
-        public int Rank { get; private set; }
-
-        public GuildMember() : base()
-        {
-
-        }
-
-        public GuildMember(GuildMemberJson guildMemberJson) : base()
-        {
-            Load(guildMemberJson);
-        }
-
-        private void Load(GuildMemberJson guildMemberJson)
-        {
-            if (CanLoadJson(guildMemberJson))
-            {
-                Rank = guildMemberJson.Rank;
-                if (CanLoadJson(guildMemberJson.Member))
-                {
-                    if (CanLoadJson(guildMemberJson.Member.Character))
-                        Load(guildMemberJson.Member.Character);
-                    else
-                    {
-                        BlizzardId = guildMemberJson.Member.Id;
-                        Name = guildMemberJson.Member.Name;
-                    }
-                }
             }
         }
     }

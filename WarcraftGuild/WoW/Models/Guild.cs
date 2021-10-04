@@ -7,18 +7,17 @@ using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class Guild
+    public class Guild : WoWData
     {
-        public ulong BlizzardId { get; private set; }
-        public string Name { get; private set; }
-        public GuildCrest Crest { get; private set; }
-        public Faction Faction { get; private set; }
-        public DateTime CreationDate { get; private set; }
-        public uint AchievementCount { get; private set; }
-        public uint AchievementPoints { get; private set; }
-        public List<AchievementCompletion> Achievements { get; private set; }
-        public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; private set; }
-        public List<GuildMember> Members { get; private set; }
+        public string Name { get; set; }
+        public GuildCrest Crest { get; set; }
+        public Faction Faction { get; set; }
+        public DateTime CreationDate { get; set; }
+        public uint AchievementCount { get; set; }
+        public uint AchievementPoints { get; set; }
+        public List<AchievementCompletion> Achievements { get; set; }
+        public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; set; }
+        public List<GuildMember> Members { get; set; }
 
         public Guild()
         {

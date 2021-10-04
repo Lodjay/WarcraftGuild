@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,12 @@ using WarcraftGuild.Core.Helpers;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class WoWData
+    public abstract class WoWData
     {
-        public string BlizzardApiComment { get; private set; }
+        [BsonId]
+        public Guid Id { get; set; }
+        public ulong BlizzardId { get; set; }
+        public string BlizzardApiComment { get; set; }
 
         protected bool CanLoadJson<WoWJson>(WoWJson json) where WoWJson : BlizzardJson, new()
         {

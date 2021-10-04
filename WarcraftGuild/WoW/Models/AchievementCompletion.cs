@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using WarcraftGuild.BlizzardApi.Json;
 
@@ -8,9 +6,8 @@ namespace WarcraftGuild.WoW.Models
 {
     public class AchievementCompletion : WoWData
     {
-        public ulong BlizzardId { get; private set; }
-        public DateTime? CompletionDate { get; private set; }
-        public AchievementCriterionCompletion Criteria { get; private set; }
+        public DateTime? CompletionDate { get; set; }
+        public AchievementCriterionCompletion Criteria { get; set; }
 
         public AchievementCompletion()
         {
@@ -33,40 +30,6 @@ namespace WarcraftGuild.WoW.Models
                     if (achievmentCompletionJson.Criteria != null)
                         Criteria = new AchievementCriterionCompletion(achievmentCompletionJson.Criteria);
                 
-            }
-        }
-    }
-
-    public class AchievementCriterionCompletion : WoWData
-    {
-        public ulong BlizzardId { get; private set; }
-        public ulong Amount { get; private set; }
-        public bool IsCompleted { get; private set; }
-        public List<AchievementCriterionCompletion> ChildCriteria { get; set; }
-
-        public AchievementCriterionCompletion()
-        {
-            ChildCriteria = new List<AchievementCriterionCompletion>();
-        }
-
-        public AchievementCriterionCompletion(AchievementCriterionCompletionJson achievementCriterionCompletionJson) : this()
-        {
-            Load(achievementCriterionCompletionJson);
-        }
-
-        public void Load(AchievementCriterionCompletionJson achievementCriterionCompletionJson)
-        {
-            if (CanLoadJson(achievementCriterionCompletionJson))
-            {
-                BlizzardId = achievementCriterionCompletionJson.Id;
-                Amount = achievementCriterionCompletionJson.Amount;
-                IsCompleted = achievementCriterionCompletionJson.IsCompleted;
-                if (achievementCriterionCompletionJson.ChildCriteria != null && achievementCriterionCompletionJson.ChildCriteria.Any())
-                {
-                    ChildCriteria = new List<AchievementCriterionCompletion>();
-                    foreach (AchievementCriterionCompletionJson child in achievementCriterionCompletionJson.ChildCriteria)
-                        ChildCriteria.Add(new AchievementCriterionCompletion(child));
-                }
             }
         }
     }

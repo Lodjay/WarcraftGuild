@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="8b6833a2-0e7b-4ae2-90ac-3d7e3e7a059c" ChangeDateTime="10/03/2021 00:13:19">
+    <Property Name="ElementName" Value="[dbo].[Region].[varchar]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Region]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Name" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2db3ff03-99e3-4d2c-b20a-bdd1a448a08d" ChangeDateTime="10/03/2021 00:21:35">
+    <Property Name="ElementName" Value="[dbo].[Realm].[Region]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Realm]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RegionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8672d596-84b9-432e-be2a-14962af103f3" ChangeDateTime="10/03/2021 00:22:15">
+    <Property Name="ElementName" Value="[dbo].[Realm].[RegionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Realm]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Region" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b2d0e31b-0415-4745-ac4b-9da1dbbe709c" ChangeDateTime="10/03/2021 00:22:34">
+    <Property Name="ElementName" Value="[dbo].[Realm].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Realm]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RealmId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a546db0d-6545-48b1-86a4-b8a3a5bb4aff" ChangeDateTime="10/03/2021 00:22:39">
+    <Property Name="ElementName" Value="[dbo].[Realm].[BlizzardId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Realm]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BlizzardRealmId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="03f0fc2d-1cf0-44a1-b1d8-f1c53f1e5482" ChangeDateTime="10/03/2021 00:22:48">
+    <Property Name="ElementName" Value="[dbo].[Region].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Region]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RegionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="51f8f0b0-0b8f-4a6f-8c07-031842fc513b" ChangeDateTime="10/03/2021 00:22:55">
+    <Property Name="ElementName" Value="[dbo].[Region].[BlizzardId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Region]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BlizzardRegionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf32bbc5-9462-4373-960f-01933c972b4f" ChangeDateTime="10/03/2021 00:25:26">
+    <Property Name="ElementName" Value="[dbo].[Realm].[string]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Realm]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="T" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f898d4da-0be3-42dd-b3f5-c8ed1743a66b" ChangeDateTime="10/03/2021 00:25:28">
+    <Property Name="ElementName" Value="[dbo].[Realm].[slug]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Realm]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Slug" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf3702f8-0640-48e0-b605-e3ea0c323978" ChangeDateTime="10/03/2021 00:25:55">
+    <Property Name="ElementName" Value="[dbo].[Realm].[T]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Realm]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Category" />
+  </Operation>
+</Operations>

@@ -29,6 +29,7 @@ namespace WarcraftGuild.Controllers
         {
             try
             {
+                _logger.LogTrace("Call GetGuild");
                 Guild guild = await _WoWHandler.GetGuild(realmSlug.ToLower(), nameSlug.ToLower(), true).ConfigureAwait(false);
                 return new JsonResult(guild) { StatusCode = (int)HttpStatusCode.OK };
             }
