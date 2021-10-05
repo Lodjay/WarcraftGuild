@@ -8,7 +8,7 @@ using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class Character : WoWData
+    public class Character : WoWModel
     {
         public string Name { get; set; }
         public Faction Faction { get; set; }
@@ -31,29 +31,20 @@ namespace WarcraftGuild.WoW.Models
             Load(characterJson);
         }
 
-        public Character(MemberJson memberJson) : this(memberJson.Character)
-        {
-            Load(memberJson);
-        }
-
-        protected void Load(MemberJson memberJson)
-        {
-            if (CanLoadJson(memberJson))
-            {
-                BlizzardId = memberJson.Id;
-            }
-        }
-
         protected void Load(CharacterJson characterJson)
         {
-            if (CanLoadJson(characterJson))
+            if (CheckJson(characterJson))
             {
                 BlizzardId = characterJson.Id;
                 Name = characterJson.Name;
-                Faction = characterJson.Faction.Type.ParseCode<Faction>();
-                Gender = characterJson.Gender.Type.ParseCode<Gender>();
-                ClassID = characterJson.Class.Id;
-                RaceID = characterJson.Race.Id;
+                if (characterJson.Faction != null)
+                    Faction = characterJson.Faction.Type.ParseCode<Faction>();
+                if (characterJson.Gender != null)
+                    Gender = characterJson.Gender.Type.ParseCode<Gender>();
+                if (characterJson.Class != null)
+                    ClassID = characterJson.Class.Id;
+                if (characterJson.Race != null)
+                    RaceID = characterJson.Race.Id;
                 Level = characterJson.Level;
             }
         }

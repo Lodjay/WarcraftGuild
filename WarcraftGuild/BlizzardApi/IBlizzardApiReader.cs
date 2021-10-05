@@ -7,7 +7,7 @@ namespace WarcraftGuild.BlizzardApi
 {
     public interface IBlizzardApiReader
     {
-        Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : BlizzardJson, new();
+        Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : Json.WoWJson, new();
 
         Task<string> GetJsonAsync(string query, Namespace? ns = null, string additionalParams = null);
 

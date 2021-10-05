@@ -9,7 +9,7 @@ using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class AchievementCategoryCompletion : WoWData
+    public class AchievementCategoryCompletion : WoWModel
     {
         public uint Quantity { get; set; }
         public uint Points { get; set; }
@@ -23,7 +23,7 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(AchievementCategoryCompletionJson achievementCategoryCompletionJson)
         {
-            if (CanLoadJson(achievementCategoryCompletionJson))
+            if (CheckJson(achievementCategoryCompletionJson))
             {
                 BlizzardId = achievementCategoryCompletionJson.Category.Id;
                 Quantity = achievementCategoryCompletionJson.Quantity;

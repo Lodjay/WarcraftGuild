@@ -3,12 +3,15 @@ using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class FactionJson : BlizzardJson
+    public class RealmJson : WoWJson
     {
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        [JsonPropertyName("id")]
+        public uint Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
+
+        [JsonPropertyName("slug")]
+        public string Slug { get; set; }
     }
 }

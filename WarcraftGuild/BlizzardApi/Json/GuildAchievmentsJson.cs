@@ -5,7 +5,7 @@ using WarcraftGuild.BlizzardApi.Interfaces;
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class GuildAchievementsJson : BlizzardJson
+    public class GuildAchievementsJson : WoWJson
     {
         [JsonPropertyName("total_quantity")]
         public uint TotalQuantity { get; set; }

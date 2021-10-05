@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class BlizzardJson
+    public abstract class WoWJson
     {
         public HttpStatusCode? ResultCode { get; set; }
+        public bool DirectlyCalled { get; set; }
     }
 }

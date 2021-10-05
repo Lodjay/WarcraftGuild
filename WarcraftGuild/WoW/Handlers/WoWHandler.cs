@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Json;
@@ -37,12 +38,11 @@ namespace WarcraftGuild.WoW.Handlers
                 {
                     List<Task<CharacterJson>> tasks = new List<Task<CharacterJson>>();
                     foreach (GuildMemberJson member in guildRosterJson.Members)
-                        if (member.Member != null)
-                            tasks.Add(_blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{realmName}/{member.Member.Name.ToLower()}", Namespace.Profile));
+                        if (member.Member != null && member.Member.Realm != null)
+                            tasks.Add(CompleteMember(member.Member));
                     CharacterJson[] results = await Task.WhenAll(tasks);
                     foreach (CharacterJson result in results)
-                        if (result.Id > 0)
-                            guildRosterJson.Members.FirstOrDefault(x => x.Member != null && x.Member.Id == result.Id).Member.Character = result;
+                        guildRosterJson.Members.FirstOrDefault(x => x.Member != null && x.Member.Name == result.Name && x.Member.Realm.Slug == result.Realm.Slug).Member = result;
                 }
                 guild.Load(guildJson, guildAchievementsJson, guildRosterJson);
                 await Repository.Delete(guild);
@@ -50,6 +50,18 @@ namespace WarcraftGuild.WoW.Handlers
             }
 
             return guild;
+        }
+
+        private async Task<CharacterJson> CompleteMember(CharacterJson character)
+        {
+            CharacterJson result = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{character.Realm.Slug}/{character.Name.ToLower()}", Namespace.Profile).ConfigureAwait(false);
+            if (result.ResultCode == HttpStatusCode.OK)
+                return result;
+            else
+            {
+                character.ResultCode = result.ResultCode;
+                return character;
+            }
         }
     }
 }

@@ -46,7 +46,7 @@ namespace WarcraftGuild.BlizzardApi
             }
         }
 
-        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : BlizzardJson, new()
+        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : Json.WoWJson, new()
         {
             ThrowIfInvalidRequest();
             if (HasTokenExpired())
@@ -60,6 +60,7 @@ namespace WarcraftGuild.BlizzardApi
                     string json = await response.ReadContentAsync();
                     WoWJson result = JsonSerializer.Deserialize<WoWJson>(json);
                     result.ResultCode = response.GetStatusCode();
+                    result.DirectlyCalled = true;
                     return result;
 
                 case HttpStatusCode.NotFound:

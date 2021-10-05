@@ -4,7 +4,7 @@ using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class AchievementCompletion : WoWData
+    public class AchievementCompletion : WoWModel
     {
         public DateTime? CompletionDate { get; set; }
         public AchievementCriterionCompletion Criteria { get; set; }
@@ -20,7 +20,7 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(AchievmentCompletionJson achievmentCompletionJson)
         {
-            if (CanLoadJson(achievmentCompletionJson))
+            if (CheckJson(achievmentCompletionJson))
             {
                 BlizzardId = achievmentCompletionJson.Id;
                     if (achievmentCompletionJson.CompletedTimestamp.HasValue)

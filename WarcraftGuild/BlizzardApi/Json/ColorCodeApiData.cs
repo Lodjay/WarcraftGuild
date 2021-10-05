@@ -1,18 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class ColorJson : BlizzardJson
-    {
-        [JsonPropertyName("id")]
-        public ulong Id { get; set; }
-
-        [JsonPropertyName("rgba")]
-        public ColorCodeApiData ColorCode { get; set; }
-    }
-
-    public class ColorCodeApiData : BlizzardJson
+    public class ColorCodeApiData : WoWJson
     {
         [JsonPropertyName("r")]
         public byte R { get; set; }

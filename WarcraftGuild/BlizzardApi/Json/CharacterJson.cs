@@ -5,7 +5,7 @@ using WarcraftGuild.BlizzardApi.Interfaces;
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class CharacterJson : BlizzardJson
+    public class CharacterJson : WoWJson
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
@@ -27,32 +27,9 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("level")]
         public ushort Level { get; set; }
-    }
 
-    public class GenderJson
-    {
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        [JsonPropertyName("realm")]
+        public RealmJson Realm { get; set; }
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-    }
-
-    public class RaceJson
-    {
-        [JsonPropertyName("id")]
-        public uint Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-    }
-
-    public class ClassJson
-    {
-        [JsonPropertyName("id")]
-        public uint Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
     }
 }

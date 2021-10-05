@@ -4,7 +4,7 @@ using WarcraftGuild.BlizzardApi.Interfaces;
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class AchievmentCompletionJson : BlizzardJson
+    public class AchievmentCompletionJson : WoWJson
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }

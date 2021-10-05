@@ -3,7 +3,7 @@ using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class GuildCrestBackground : WoWData
+    public class GuildCrestBackground : WoWModel
     {
         public Color Color { get; set; }
 

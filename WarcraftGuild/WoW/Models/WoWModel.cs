@@ -8,32 +8,36 @@ using WarcraftGuild.Core.Helpers;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public abstract class WoWData
+    public abstract class WoWModel
     {
         [BsonId]
         public Guid Id { get; set; }
         public ulong BlizzardId { get; set; }
         public string BlizzardApiComment { get; set; }
 
-        protected bool CanLoadJson<WoWJson>(WoWJson json) where WoWJson : BlizzardJson, new()
+        protected bool CheckJson(WoWJson json)
         {
             if (json == null)
+            {
+                BlizzardApiComment = Messages.NOT_FOUND;
                 return false;
+            }
             switch (json.ResultCode)
             {
                 case null:
                 case System.Net.HttpStatusCode.OK:
-                    return true;
+                    break;
                 case System.Net.HttpStatusCode.Forbidden:
                     BlizzardApiComment = Messages.FORBIDDEN;
-                    return false;
+                    break;
                 case System.Net.HttpStatusCode.NotFound:
                     BlizzardApiComment = Messages.NOT_FOUND;
-                    return false;
+                    break;
                 default:
                     BlizzardApiComment = Messages.UNKNOWN_ERROR;
-                    return false;
+                    break;
             }
+            return true;
         }
     }
 }

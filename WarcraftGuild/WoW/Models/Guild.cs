@@ -7,7 +7,7 @@ using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class Guild : WoWData
+    public class Guild : WoWModel
     {
         public string Name { get; set; }
         public GuildCrest Crest { get; set; }
@@ -28,42 +28,50 @@ namespace WarcraftGuild.WoW.Models
 
         public Guild(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson, GuildRosterJson guildRosterJson) : this()
         {
-            Load(guildJson, guildAchievementsJson, guildRosterJson);
+            Load(guildJson);
+            Load(guildAchievementsJson);
+            Load(guildRosterJson);
         }
 
-        public void Load(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson,  GuildRosterJson guildRosterJson)
+        public void Load(GuildJson guildJson)
         {
-            if (guildJson != null)
+            if (CheckJson(guildJson))
             {
                 BlizzardId = guildJson.Id;
                 Name = guildJson.Name;
                 Crest = new GuildCrest(guildJson.Crest);
                 Faction = guildJson.Faction.Type.ParseCode<Faction>();
                 CreationDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(guildJson.CreationTimestamp);
-                if (guildAchievementsJson != null)
-                {
-                    AchievementCount = guildAchievementsJson.TotalQuantity;
-                    AchievementPoints = guildAchievementsJson.TotalPoints;
-                    if (Achievements.Any())
-                        Achievements.Clear();
-                    foreach (AchievmentCompletionJson achievmentCompletionJson in guildAchievementsJson.Achievements)
-                        Achievements.Add(new AchievementCompletion(achievmentCompletionJson));
-                    if (AchievementCategoryCompletion.Any())
-                        AchievementCategoryCompletion.Clear();
-                    foreach (AchievementCategoryCompletionJson achievementCategoryCompletionJson in guildAchievementsJson.CategoriesProgress)
-                        AchievementCategoryCompletion.Add(new AchievementCategoryCompletion(achievementCategoryCompletionJson));
-                }
-                if (guildRosterJson != null)
-                {
-                    if (Members.Any())
-                        Members.Clear();
-                    foreach (GuildMemberJson member in guildRosterJson.Members)
-                        if (member.Member != null)
-                        {
-                            Members.Add(new GuildMember(member));
-                        }
-                }
             }
         }
+
+        public void Load(GuildAchievementsJson guildAchievementsJson)
+        {
+            if (CheckJson(guildAchievementsJson))
+            {
+                AchievementCount = guildAchievementsJson.TotalQuantity;
+                AchievementPoints = guildAchievementsJson.TotalPoints;
+                if (Achievements.Any())
+                    Achievements.Clear();
+                foreach (AchievmentCompletionJson achievmentCompletionJson in guildAchievementsJson.Achievements)
+                    Achievements.Add(new AchievementCompletion(achievmentCompletionJson));
+                if (AchievementCategoryCompletion.Any())
+                    AchievementCategoryCompletion.Clear();
+                foreach (AchievementCategoryCompletionJson achievementCategoryCompletionJson in guildAchievementsJson.CategoriesProgress)
+                    AchievementCategoryCompletion.Add(new AchievementCategoryCompletion(achievementCategoryCompletionJson));
+            }
+        }
+
+        public void Load(GuildRosterJson guildRosterJson)
+        {
+            if (CheckJson(guildRosterJson))
+            {
+                if (Members.Any())
+                    Members.Clear();
+                foreach (GuildMemberJson member in guildRosterJson.Members)
+                    Members.Add(new GuildMember(member));
+            }
+        }
+        
     }
 }

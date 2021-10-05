@@ -18,19 +18,10 @@ namespace WarcraftGuild.WoW.Models
 
         private void Load(GuildMemberJson guildMemberJson)
         {
-            if (CanLoadJson(guildMemberJson))
+            if (CheckJson(guildMemberJson))
             {
                 Rank = guildMemberJson.Rank;
-                if (CanLoadJson(guildMemberJson.Member))
-                {
-                    if (CanLoadJson(guildMemberJson.Member.Character))
-                        Load(guildMemberJson.Member.Character);
-                    else
-                    {
-                        BlizzardId = guildMemberJson.Member.Id;
-                        Name = guildMemberJson.Member.Name;
-                    }
-                }
+                Load(guildMemberJson.Member);
             }
         }
     }

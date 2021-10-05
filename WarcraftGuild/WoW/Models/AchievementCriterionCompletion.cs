@@ -4,7 +4,7 @@ using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class AchievementCriterionCompletion : WoWData
+    public class AchievementCriterionCompletion : WoWModel
     {
         public ulong Amount { get; set; }
         public bool IsCompleted { get; set; }
@@ -22,7 +22,7 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(AchievementCriterionCompletionJson achievementCriterionCompletionJson)
         {
-            if (CanLoadJson(achievementCriterionCompletionJson))
+            if (CheckJson(achievementCriterionCompletionJson))
             {
                 BlizzardId = achievementCriterionCompletionJson.Id;
                 Amount = achievementCriterionCompletionJson.Amount;

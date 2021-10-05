@@ -3,8 +3,9 @@ using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class GuildCrestEmblem : WoWData
+    public class GuildCrestEmblem : WoWModel
     {
+        public string ImageUrl { get; set; }
 
         public Color Color { get; set; }
 

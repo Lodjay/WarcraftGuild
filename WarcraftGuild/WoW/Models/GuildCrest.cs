@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class GuildCrest : WoWData
+    public class GuildCrest : WoWModel
     {
         public GuildCrestEmblem Emblem { get; set; }
         public GuildCrestBorder Border { get; set; }
