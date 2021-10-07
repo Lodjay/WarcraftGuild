@@ -13,12 +13,12 @@ namespace WarcraftGuild.WoW.Models
         {
         }
 
-        public AchievementCompletion(AchievmentCompletionJson achievmentCompletionJson) : base()
+        public AchievementCompletion(AchievementCompletionJson achievmentCompletionJson) : base()
         {
             Load(achievmentCompletionJson);
         }
 
-        public void Load(AchievmentCompletionJson achievmentCompletionJson)
+        public void Load(AchievementCompletionJson achievmentCompletionJson)
         {
             if (CheckJson(achievmentCompletionJson))
             {

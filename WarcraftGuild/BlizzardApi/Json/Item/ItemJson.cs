@@ -2,11 +2,13 @@
 using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Json
-
 {
-    public class AchievementJson : WoWJson
+    public class ItemJson : WoWJson
     {
         [JsonPropertyName("id")]
-        public ulong Id { get; set; }
+        public uint Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
     }
 }

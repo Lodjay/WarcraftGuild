@@ -41,7 +41,7 @@ namespace WarcraftGuild.WoW.Handlers
                     List<Task<CharacterJson>> tasks = new List<Task<CharacterJson>>();
                     foreach (GuildMemberJson member in guildRosterJson.Members)
                         if (member.Member != null && member.Member.Realm != null)
-                            tasks.Add(CompleteMember(member.Member));
+                            tasks.Add(CompleteCharacter(member.Member));
                     CharacterJson[] results = await Task.WhenAll(tasks);
                     foreach (CharacterJson result in results)
                         guildRosterJson.Members.FirstOrDefault(x => x.Member != null && x.Member.Name == result.Name && x.Member.Realm.Slug == result.Realm.Slug).Member = result;
@@ -55,9 +55,23 @@ namespace WarcraftGuild.WoW.Handlers
         public async Task Init()
         {
             await DeleteAllDatas().ConfigureAwait(false);
-            await FillRealms().ConfigureAwait(false);
+            List<Task> InitTasks = new List<Task>
+            {
+                FillAchievements(),
+                FillAchievementCategories(),
+                FillRealms()
+            };
+            await Task.WhenAll(InitTasks).ConfigureAwait(false);
         }
 
+        private static async Task<bool> DeleteAllDatas()
+        {
+            Repository repository = new Repository();
+            await repository.DropAll();
+            return true;
+        }
+
+        #region Realms
         private async Task FillRealms()
         {
             List<ConnectedRealm> connectedRealms = await GetConnectedRealms().ConfigureAwait(false);
@@ -77,7 +91,7 @@ namespace WarcraftGuild.WoW.Handlers
         {
             List<ConnectedRealm> connectedRealms = new List<ConnectedRealm>();
             List<Task<ConnectedRealmJson>> CRTasks = new List<Task<ConnectedRealmJson>>();
-            ConnectedRealmListJson CRList = await _blizzardApiReader.GetAsync<ConnectedRealmListJson>("data/wow/connected-realm/", Namespace.Dynamic).ConfigureAwait(false);
+            ConnectedRealmIndexJson CRList = await _blizzardApiReader.GetAsync<ConnectedRealmIndexJson>("data/wow/connected-realm/", Namespace.Dynamic).ConfigureAwait(false);
             foreach (HrefJson href in CRList.ConnectedRealms)
                 CRTasks.Add(GetConnectedRealmJson(href.Uri.LocalPath));
             ConnectedRealmJson[] connectedRealmJsonList = await Task.WhenAll(CRTasks).ConfigureAwait(false);
@@ -108,15 +122,83 @@ namespace WarcraftGuild.WoW.Handlers
         {
             return await _blizzardApiReader.GetAsync<RealmJson>($"data/wow/realm/{slug}", Namespace.Dynamic).ConfigureAwait(false);
         }
+        #endregion
 
-        private async Task<bool> DeleteAllDatas()
+        #region Achievements
+
+        private async Task FillAchievements()
         {
-            Repository repository = new Repository();
-            await repository.DropAll();
-            return true;
+            List<Achievement> achievements = await GetAchievements().ConfigureAwait(false);
+
+            List<Task> insertTasks = new List<Task>(); Repository repository = new Repository();
+            foreach (Achievement achievement in achievements)
+                insertTasks.Add(repository.Insert(achievement));
+            await Task.WhenAll(insertTasks).ConfigureAwait(false);
         }
 
-        private async Task<CharacterJson> CompleteMember(CharacterJson character)
+        private async Task FillAchievementCategories()
+        {
+            List<AchievementCategory> achievementCategories = await GetAchievementCategories().ConfigureAwait(false);
+
+            List<Task> insertTasks = new List<Task>(); Repository repository = new Repository();
+            foreach (AchievementCategory achievementCategory in achievementCategories)
+                insertTasks.Add(repository.Insert(achievementCategory));
+            await Task.WhenAll(insertTasks).ConfigureAwait(false);
+        }
+
+        public async Task<List<Achievement>> GetAchievements()
+        {
+            List<Achievement> achievements = new List<Achievement>();
+            List<Task<AchievementJson>> ATasks = new List<Task<AchievementJson>>();
+            AchievementIndexJson AList = await _blizzardApiReader.GetAsync<AchievementIndexJson>("data/wow/achievement/index", Namespace.Static).ConfigureAwait(false);
+            foreach (AchievementJson achievement in AList.Achievements)
+                ATasks.Add(CompleteAchievement(achievement));
+            AchievementJson[] AchievementJsonList = await Task.WhenAll(ATasks).ConfigureAwait(false);
+            foreach (AchievementJson achievementJson in AchievementJsonList)
+                achievements.Add(new Achievement(achievementJson));
+            return achievements;
+        }
+
+        public async Task<AchievementJson> CompleteAchievement(AchievementJson achievementJson)
+        {
+            AchievementJson result = await _blizzardApiReader.GetAsync<AchievementJson>($"data/wow/achievement/{achievementJson.Id}", Namespace.Static).ConfigureAwait(false);
+            if (result.ResultCode == HttpStatusCode.OK)
+                return result;
+            else
+            {
+                achievementJson.ResultCode = result.ResultCode;
+                return achievementJson;
+            }
+        }
+
+        public async Task<List<AchievementCategory>> GetAchievementCategories()
+        {
+            List<AchievementCategory> achievementCategories = new List<AchievementCategory>();
+            List<Task<AchievementCategoryJson>> ACTasks = new List<Task<AchievementCategoryJson>>();
+            AchievementCategoryIndexJson ACList = await _blizzardApiReader.GetAsync<AchievementCategoryIndexJson>("data/wow/achievement-category/index", Namespace.Static).ConfigureAwait(false);
+            foreach (AchievementCategoryJson category in ACList.Categories)
+                ACTasks.Add(CompleteAchievementCategory(category));
+            AchievementCategoryJson[] AchievementCategoryJsonList = await Task.WhenAll(ACTasks).ConfigureAwait(false);
+            foreach (AchievementCategoryJson achievementCategoryJson in AchievementCategoryJsonList)
+                achievementCategories.Add(new AchievementCategory(achievementCategoryJson));
+            return achievementCategories;
+        }
+
+        public async Task<AchievementCategoryJson> CompleteAchievementCategory(AchievementCategoryJson categoryJson)
+        {
+            AchievementCategoryJson result = await _blizzardApiReader.GetAsync<AchievementCategoryJson>($"data/wow/achievement-category/{categoryJson.Id}", Namespace.Static).ConfigureAwait(false);
+            if (result.ResultCode == HttpStatusCode.OK)
+                return result;
+            else
+            {
+                categoryJson.ResultCode = result.ResultCode;
+                return categoryJson;
+            }
+        }
+
+        #endregion
+
+        private async Task<CharacterJson> CompleteCharacter(CharacterJson character)
         {
             CharacterJson result = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{character.Realm.Slug}/{character.Name.ToLower()}", Namespace.Profile).ConfigureAwait(false);
             if (result.ResultCode == HttpStatusCode.OK)

@@ -53,7 +53,7 @@ namespace WarcraftGuild.WoW.Models
                 AchievementPoints = guildAchievementsJson.TotalPoints;
                 if (Achievements.Any())
                     Achievements.Clear();
-                foreach (AchievmentCompletionJson achievmentCompletionJson in guildAchievementsJson.Achievements)
+                foreach (AchievementCompletionJson achievmentCompletionJson in guildAchievementsJson.Achievements)
                     Achievements.Add(new AchievementCompletion(achievmentCompletionJson));
                 if (AchievementCategoryCompletion.Any())
                     AchievementCategoryCompletion.Clear();

@@ -7,7 +7,7 @@ namespace WarcraftGuild.BlizzardApi.Json
     public class AchievementCategoryCompletionJson : WoWJson
     {
         [JsonPropertyName("category")]
-        public AchievmentCategoryJson Category { get; set; }
+        public AchievementCategoryJson Category { get; set; }
 
         [JsonPropertyName("quantity")]
         public uint Quantity { get; set; }

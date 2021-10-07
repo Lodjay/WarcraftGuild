@@ -14,6 +14,7 @@ namespace WarcraftGuild.WoW.Models
         public Guid Id { get; set; }
         public ulong BlizzardId { get; set; }
         public string BlizzardApiComment { get; set; }
+        public DateTime UpdateDate { get; set; }
 
         protected bool CheckJson(WoWJson json)
         {

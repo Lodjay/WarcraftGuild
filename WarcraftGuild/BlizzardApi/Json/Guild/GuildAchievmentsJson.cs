@@ -14,7 +14,7 @@ namespace WarcraftGuild.BlizzardApi.Json
         public uint TotalPoints { get; set; }
 
         [JsonPropertyName("achievements")]
-        public IEnumerable<AchievmentCompletionJson> Achievements { get; set; }
+        public IEnumerable<AchievementCompletionJson> Achievements { get; set; }
 
         [JsonPropertyName("category_progress")]
         public IEnumerable<AchievementCategoryCompletionJson> CategoriesProgress { get; set; }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class ConnectedRealmListJson : WoWJson
+    public class ConnectedRealmIndexJson : WoWJson
     {
         [JsonPropertyName("connected_realms")]
         public List<HrefJson> ConnectedRealms { get; set; }

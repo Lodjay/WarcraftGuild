@@ -22,6 +22,7 @@ namespace WarcraftGuild.Core.Helpers
         public async Task Insert<T>(T data) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
+            data.UpdateDate = DateTime.Now;
             await collection.InsertOneAsync(data).ConfigureAwait(false);
         }
 
