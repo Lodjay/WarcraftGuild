@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WarcraftGuild.Core.Enums;
 using WarcraftGuild.Core.Extensions;
@@ -51,9 +52,9 @@ namespace WarcraftGuild.BlizzardApi.Configuration
             return authUrl;
         }
 
-        public string GetApiUrl()
+        public Uri GetApiUrl()
         {
-            return apiUrl;
+            return new Uri(apiUrl);
         }
     }
 }

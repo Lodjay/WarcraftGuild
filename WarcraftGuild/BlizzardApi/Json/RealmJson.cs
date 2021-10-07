@@ -13,5 +13,20 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("slug")]
         public string Slug { get; set; }
+
+        [JsonPropertyName("category")]
+        public string Category { get; set; }
+
+        [JsonPropertyName("locale")]
+        public string Locale { get; set; }
+
+        [JsonPropertyName("timezone")]
+        public string Timezone { get; set; }
+
+        [JsonPropertyName("is_tournament")]
+        public bool Tournament { get; set; }
+
+        [JsonPropertyName("type")]
+        public TypeJson Type { get; set; }
     }
 }

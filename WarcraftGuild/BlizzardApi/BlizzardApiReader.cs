@@ -33,7 +33,7 @@ namespace WarcraftGuild.BlizzardApi
             if (HasTokenExpired())
                 await SendTokenRequest();
             string urlRequest = ParsePath(query, ns, additionalParams);
-            IApiResponse response = await _webClient.MakeApiRequestAsync(_config.GetApiUrl() + urlRequest);
+            IApiResponse response = await _webClient.MakeApiRequestAsync(new Uri(_config.GetApiUrl(), urlRequest).AbsoluteUri);
             _config.NotifyAllLimits();
             switch (response.GetStatusCode())
             {
@@ -52,7 +52,7 @@ namespace WarcraftGuild.BlizzardApi
             if (HasTokenExpired())
                 await SendTokenRequest();
             string urlRequest = ParsePath(query, ns, additionalParams);
-            IApiResponse response = await _webClient.MakeApiRequestAsync(_config.GetApiUrl() + urlRequest);
+            IApiResponse response = await _webClient.MakeApiRequestAsync(new Uri(_config.GetApiUrl(), urlRequest).AbsoluteUri);
             _config.NotifyAllLimits();
             switch (response.GetStatusCode())
             {

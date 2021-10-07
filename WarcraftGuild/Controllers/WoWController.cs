@@ -23,6 +23,23 @@ namespace WarcraftGuild.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        [Route("init")]
+        [HttpGet]
+        public async Task<IActionResult> InitApi()
+        {
+            try
+            {
+                _logger.LogTrace("Initialize API...");
+                await _WoWHandler.Init();
+                return new OkResult();
+            }
+            catch (Exception ex) when (ex != null)
+            {
+                _logger.LogCritical(ex.Message);
+                return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+            }
+        }
+
         [Route("guild/{nameSlug}/{realmSlug}")]
         [HttpGet]
         public async Task<IActionResult> GetGuild([FromRoute] string nameSlug, [FromRoute] string realmSlug)

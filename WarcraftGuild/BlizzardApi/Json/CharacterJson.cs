@@ -14,10 +14,10 @@ namespace WarcraftGuild.BlizzardApi.Json
         public string Name { get; set; }
 
         [JsonPropertyName("gender")]
-        public GenderJson Gender { get; set; }
+        public TypeJson Gender { get; set; }
 
         [JsonPropertyName("faction")]
-        public FactionJson Faction { get; set; }
+        public TypeJson Faction { get; set; }
 
         [JsonPropertyName("race")]
         public RaceJson Race { get; set; }

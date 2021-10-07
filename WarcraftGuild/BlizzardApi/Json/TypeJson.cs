@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class FactionJson : WoWJson
+    public class TypeJson
     {
         [JsonPropertyName("type")]
         public string Type { get; set; }

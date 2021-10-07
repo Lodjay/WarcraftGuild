@@ -8,5 +8,7 @@ namespace WarcraftGuild.WoW.Interfaces
         Task<Guild> GetGuild(string realmName, string guildName);
 
         Task<Guild> GetGuild(string realmName, string guildName, bool forceRefresh);
+
+        Task Init();
     }
 }

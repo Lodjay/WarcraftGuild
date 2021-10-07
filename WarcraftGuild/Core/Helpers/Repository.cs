@@ -9,30 +9,30 @@ using WarcraftGuild.WoW.Models;
 
 namespace WarcraftGuild.Core.Helpers
 {
-    public static class Repository
+    public class Repository
     {
-        private static readonly IMongoDatabase _db;
+        private readonly IMongoDatabase _db;
 
-        static Repository()
+        public Repository()
         {
             MongoClient client = new MongoClient();
             _db = client.GetDatabase("WarcraftGuild");
         }
 
-        public static async Task Insert<T>(T data) where T : WoWModel, new()
+        public async Task Insert<T>(T data) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             await collection.InsertOneAsync(data).ConfigureAwait(false);
         }
 
-        public static async Task<List<T>> LoadAll<T>() where T: WoWModel, new()
+        public async Task<List<T>> LoadAll<T>() where T: WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             var result = await collection.FindAsync(new BsonDocument()).ConfigureAwait(false);
             return result.ToList();
         }
 
-        public static async Task<T> LoadByGuid<T>(Guid id) where T : WoWModel, new()
+        public async Task<T> LoadByGuid<T>(Guid id) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("Id", id);
@@ -40,7 +40,7 @@ namespace WarcraftGuild.Core.Helpers
             return result.FirstOrDefault();
         }
 
-        public static async Task<T> LoadByBlizzardId<T>(ulong blizzardId) where T : WoWModel, new()
+        public async Task<T> LoadByBlizzardId<T>(ulong blizzardId) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("BlizzardId", blizzardId);
@@ -48,31 +48,49 @@ namespace WarcraftGuild.Core.Helpers
             return result.FirstOrDefault();
         }
 
-        public static async Task DeleteAll<T>() where T : WoWModel, new()
+        public async Task DeleteAll<T>() where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Empty;
             await collection.DeleteManyAsync(filter);
         }
 
-        public static async Task Delete<T>(T data) where T : WoWModel, new()
+        public async Task Delete<T>(T data) where T : WoWModel, new()
         {
             await DeleteByBlizzardId<T>(data.BlizzardId).ConfigureAwait(false);
         }
 
-
-        public static async Task DeleteById<T>(Guid id) where T : WoWModel, new()
+        public async Task DeleteById<T>(Guid id) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("Id", id);
             await collection.DeleteOneAsync(filter);
         }
 
-        public static async Task DeleteByBlizzardId<T>(ulong blizzardId) where T : WoWModel, new()
+        public async Task DeleteByBlizzardId<T>(ulong blizzardId) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("BlizzardId", blizzardId);
             await collection.DeleteOneAsync(filter);
+        }
+
+        public async Task Drop<T>() where T : WoWModel, new()
+        {
+            await _db.DropCollectionAsync(typeof(T).Name);
+        }
+
+        public async Task Drop(string collection)
+        {
+            await _db.DropCollectionAsync(collection);
+        }
+
+        public async Task DropAll()
+        {
+            var collections = await _db.ListCollectionNamesAsync().ConfigureAwait(false);
+            List<Task> tasks = new List<Task>();
+            foreach (string collection in collections.ToList())
+                tasks.Add(Drop(collection));
+            await Task.WhenAll(tasks);
         }
     }
 }
