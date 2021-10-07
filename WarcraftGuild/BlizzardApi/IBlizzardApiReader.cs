@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Interfaces;
-using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
 
 namespace WarcraftGuild.BlizzardApi

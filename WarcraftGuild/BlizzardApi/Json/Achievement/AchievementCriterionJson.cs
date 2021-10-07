@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Json
 
@@ -24,6 +23,5 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("child_criteria")]
         public List<AchievementCriterionJson> SubCriteria { get; set; }
-
     }
 }

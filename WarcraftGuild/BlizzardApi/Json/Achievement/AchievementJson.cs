@@ -1,16 +1,10 @@
 ﻿using System.Text.Json.Serialization;
-using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
     public class AchievementJson : WoWJson
     {
-        public AchievementJson()
-        {
-            Media = new MediaJson { Type = "achievement" };
-        }
-
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
 
@@ -41,8 +35,6 @@ namespace WarcraftGuild.BlizzardApi.Json
         [JsonPropertyName("reward_item")]
         public ItemJson RewardItem { get; set; }
 
-        [JsonPropertyName("media")]
         public MediaJson Media { get; set; }
-
     }
 }

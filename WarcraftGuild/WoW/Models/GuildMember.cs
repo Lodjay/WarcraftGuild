@@ -8,7 +8,6 @@ namespace WarcraftGuild.WoW.Models
 
         public GuildMember() : base()
         {
-
         }
 
         public GuildMember(GuildMemberJson guildMemberJson) : base()

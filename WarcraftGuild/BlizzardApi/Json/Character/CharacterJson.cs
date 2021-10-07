@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using WarcraftGuild.BlizzardApi.Interfaces;
+﻿using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.Json
 
@@ -30,6 +28,5 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("realm")]
         public RealmJson Realm { get; set; }
-
     }
 }

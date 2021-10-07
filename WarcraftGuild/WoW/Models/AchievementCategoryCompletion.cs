@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Drawing;
-using WarcraftGuild.BlizzardApi.Json;
-using WarcraftGuild.Core.Extensions;
-using WarcraftGuild.WoW.Enums;
+﻿using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -14,7 +7,9 @@ namespace WarcraftGuild.WoW.Models
         public uint Quantity { get; set; }
         public uint Points { get; set; }
 
-        public AchievementCategoryCompletion() { }
+        public AchievementCategoryCompletion()
+        {
+        }
 
         public AchievementCategoryCompletion(AchievementCategoryCompletionJson achievementCategoryCompletionJson) : this()
         {

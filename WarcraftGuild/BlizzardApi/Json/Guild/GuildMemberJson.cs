@@ -11,5 +11,4 @@ namespace WarcraftGuild.BlizzardApi.Json
         [JsonPropertyName("rank")]
         public short Rank { get; set; }
     }
-
 }

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Drawing;
 using WarcraftGuild.BlizzardApi.Json;
-using WarcraftGuild.Core.Extensions;
-using WarcraftGuild.WoW.Enums;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -18,8 +13,11 @@ namespace WarcraftGuild.WoW.Models
         public int Order { get; set; }
         public ulong CategoryId { get; set; }
         public ulong PrerequisiteId { get; set; }
+        public Uri Icon { get; set; }
 
-        public Achievement() { }
+        public Achievement()
+        {
+        }
 
         public Achievement(AchievementJson achievementJson) : this()
         {
@@ -40,6 +38,8 @@ namespace WarcraftGuild.WoW.Models
                     CategoryId = achievementJson.Category.Id;
                 if (achievementJson.Prerequisite != null)
                     PrerequisiteId = achievementJson.Prerequisite.Id;
+                if (achievementJson.Media != null && achievementJson.Media.Assets != null && achievementJson.Media.Assets.Any(x => x.Key == "icon"))
+                    Icon = new Uri(achievementJson.Media.Assets.Find(x => x.Key == "icon").Value);
             }
         }
     }

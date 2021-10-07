@@ -11,8 +11,8 @@ namespace WarcraftGuild.WoW.Models
         public ulong ParentId { get; set; }
         public List<ulong> AchievementList { get; set; }
 
-        public AchievementCategory() 
-        { 
+        public AchievementCategory()
+        {
             AchievementList = new List<ulong>();
         }
 

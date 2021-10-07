@@ -72,6 +72,5 @@ namespace WarcraftGuild.WoW.Models
                     Members.Add(new GuildMember(member));
             }
         }
-        
     }
 }

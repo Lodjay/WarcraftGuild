@@ -7,6 +7,7 @@ namespace WarcraftGuild.BlizzardApi.Json
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
+
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
@@ -21,6 +22,5 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("achievements")]
         public List<AchievementJson> Achievments { get; set; }
-
     }
 }

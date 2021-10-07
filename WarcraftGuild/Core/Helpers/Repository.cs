@@ -3,7 +3,6 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using WarcraftGuild.WoW.Models;
 
@@ -26,7 +25,7 @@ namespace WarcraftGuild.Core.Helpers
             await collection.InsertOneAsync(data).ConfigureAwait(false);
         }
 
-        public async Task<List<T>> LoadAll<T>() where T: WoWModel, new()
+        public async Task<List<T>> LoadAll<T>() where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             var result = await collection.FindAsync(new BsonDocument()).ConfigureAwait(false);

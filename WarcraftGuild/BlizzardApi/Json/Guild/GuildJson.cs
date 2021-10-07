@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Json
 
@@ -8,6 +7,7 @@ namespace WarcraftGuild.BlizzardApi.Json
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
+
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

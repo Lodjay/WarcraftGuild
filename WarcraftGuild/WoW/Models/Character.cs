@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Extensions;
 using WarcraftGuild.WoW.Enums;
@@ -18,7 +15,6 @@ namespace WarcraftGuild.WoW.Models
         public ushort Level { get; set; }
         public List<AchievementCompletion> Achievements { get; set; }
         public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; set; }
-
 
         public Character()
         {
