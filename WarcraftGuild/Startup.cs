@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
+using WarcraftGuild.WoW.Configuration;
 using WarcraftGuild.WoW.Handlers;
 using WarcraftGuild.WoW.Interfaces;
 
@@ -35,9 +36,11 @@ namespace WarcraftGuild
             });
             services.AddControllers();
             services.Configure<BlizzardApiConfiguration>(config => Configuration.GetSection("BlizzardApi").Bind(config));
+            services.Configure<ApiConfiguration>(config => Configuration.GetSection("ApiConfiguration").Bind(config));
             services.AddHttpClient();
             services.AddSingleton<IBlizzardApiReader, BlizzardApiReader>();
             services.AddSingleton<IWoWHandler, WoWHandler>();
+            services.AddSingleton<IApiCollector, ApiCollector>();
             services.AddSingleton<IWebClient, ApiWebClient>();
             services.AddSwaggerGen(c =>
             {

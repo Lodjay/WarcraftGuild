@@ -18,6 +18,7 @@ namespace WarcraftGuild.Core.Helpers
             _db = client.GetDatabase("WarcraftGuild");
         }
 
+        #region General
         public async Task Insert<T>(T data) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
@@ -25,14 +26,14 @@ namespace WarcraftGuild.Core.Helpers
             await collection.InsertOneAsync(data).ConfigureAwait(false);
         }
 
-        public async Task<List<T>> LoadAll<T>() where T : WoWModel, new()
+        public async Task<List<T>> GetAll<T>() where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             var result = await collection.FindAsync(new BsonDocument()).ConfigureAwait(false);
             return result.ToList();
         }
 
-        public async Task<T> LoadByGuid<T>(Guid id) where T : WoWModel, new()
+        public async Task<T> GetByGuid<T>(Guid id) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("Id", id);
@@ -40,7 +41,7 @@ namespace WarcraftGuild.Core.Helpers
             return result.FirstOrDefault();
         }
 
-        public async Task<T> LoadByBlizzardId<T>(ulong blizzardId) where T : WoWModel, new()
+        public async Task<T> GetByBlizzardId<T>(ulong blizzardId) where T : WoWModel, new()
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("BlizzardId", blizzardId);
@@ -92,5 +93,16 @@ namespace WarcraftGuild.Core.Helpers
                 tasks.Add(Drop(collection));
             await Task.WhenAll(tasks);
         }
+        #endregion
+
+        #region Specific
+        public async Task<Realm> GetRealmBySlug(string slug)
+        {
+            var collection = _db.GetCollection<Realm>(typeof(Realm).Name);
+            FilterDefinition<Realm> filter = Builders<Realm>.Filter.Eq("Slug", slug);
+            var result = await collection.FindAsync(filter).ConfigureAwait(false);
+            return result.FirstOrDefault();
+        }
+        #endregion
     }
 }

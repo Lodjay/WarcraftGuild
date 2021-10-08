@@ -14,13 +14,8 @@ namespace WarcraftGuild.WoW.Models
         public string BlizzardApiComment { get; set; }
         public DateTime UpdateDate { get; set; }
 
-        protected bool CheckJson(WoWJson json)
+        public void Load(WoWJson json)
         {
-            if (json == null)
-            {
-                BlizzardApiComment = Messages.NOT_FOUND;
-                return false;
-            }
             switch (json.ResultCode)
             {
                 case null:
@@ -38,6 +33,15 @@ namespace WarcraftGuild.WoW.Models
                 default:
                     BlizzardApiComment = Messages.UNKNOWN_ERROR;
                     break;
+            }
+        }
+
+        protected bool CheckJson(WoWJson json)
+        {
+            if (json == null)
+            {
+                BlizzardApiComment = Messages.NOT_FOUND;
+                return false;
             }
             return true;
         }
