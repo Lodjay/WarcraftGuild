@@ -42,6 +42,7 @@ namespace WarcraftGuild
             services.AddSingleton<IWoWHandler, WoWHandler>();
             services.AddSingleton<IApiCollector, ApiCollector>();
             services.AddSingleton<IWebClient, ApiWebClient>();
+            services.AddSingleton<IDbManager, DbManager>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WarcraftGuild", Version = "v1" });

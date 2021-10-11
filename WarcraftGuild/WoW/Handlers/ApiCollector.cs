@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
-using WarcraftGuild.Core.Helpers;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 using WarcraftGuild.WoW.Configuration;
@@ -16,59 +15,60 @@ namespace WarcraftGuild.WoW.Handlers
 {
     public class ApiCollector : IApiCollector
     {
-        private readonly IBlizzardApiReader _blizzardApiReader;
         private readonly ApiConfiguration _config;
+        private readonly IBlizzardApiReader _blizzardApiReader;
+        private readonly IDbManager _dbManager;
 
-        public ApiCollector(IOptions<ApiConfiguration> apiConfiguration, IBlizzardApiReader blizzardApiReader)
+        public ApiCollector(IOptions<ApiConfiguration> apiConfiguration, IBlizzardApiReader blizzardApiReader, IDbManager dbManager)
         {
-            _config = apiConfiguration.Value;
+            _config = apiConfiguration.Value ?? throw new ArgumentNullException(nameof(apiConfiguration));
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
+            _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
         }
 
         public async Task<ConnectedRealm> GetConnectedRealmById(ulong blizzardId, bool forceUpdate = false)
         {
-            ConnectedRealm connectedRealm = await CheckDbByBlizzardId<ConnectedRealm>(blizzardId, forceUpdate).ConfigureAwait(false);
-            if (connectedRealm == null)
+            ConnectedRealm connectedRealm = forceUpdate? null : await GetFromDbByBlizzardId<ConnectedRealm>(blizzardId).ConfigureAwait(false);
+            bool update = forceUpdate || await CheckDbData(connectedRealm).ConfigureAwait(false);
+            if (update)
                 connectedRealm = await DbInsertFromApi<ConnectedRealm, ConnectedRealmJson>($"data/wow/connected-realm/{blizzardId}", Namespace.Dynamic).ConfigureAwait(false);
             return connectedRealm;
         }
 
-        private async Task<TModel> CheckDbByBlizzardId<TModel>(ulong blizzardId, bool forceUpdate = false) where TModel : WoWModel, new()
+        public async Task<Realm> GetRealmBySlug(string slug, bool forceUpdate = false)
         {
-            Repository repository = new Repository();
-            TModel model = forceUpdate ? await repository.GetByBlizzardId<TModel>(blizzardId).ConfigureAwait(false) : null;
-            if (model != null && model.UpdateDate.AddDays(_config.DataExpiryDays) > DateTime.Now)
-            {
-                await repository.Delete(model).ConfigureAwait(false);
-                model = null;
-            }
+            Realm realm = forceUpdate ? null : await _dbManager.GetRealmBySlug(slug).ConfigureAwait(false) ;
+            bool update = forceUpdate || await CheckDbData(realm).ConfigureAwait(false);
+            if (update)
+                realm = await DbInsertFromApi<Realm, RealmJson>($"data/wow/realm/{slug}", Namespace.Dynamic).ConfigureAwait(false);
+            return realm;
+        }
+
+        private async Task<TModel> GetFromDbByBlizzardId<TModel>(ulong blizzardId) where TModel : WoWModel, new()
+        {
+            TModel model = await _dbManager.GetByBlizzardId<TModel>(blizzardId).ConfigureAwait(false);
             return model;
+        }
+
+        private async Task<bool> CheckDbData<TModel>(TModel model) where TModel : WoWModel, new()
+        {
+            if (model == null)
+                return true;
+            if (model.UpdateDate.AddDays(_config.DataExpiryDays) > DateTime.Now)
+            {
+                await _dbManager.Delete(model).ConfigureAwait(false);
+                return true;
+            }
+            return false;
         }
 
         private async Task<TModel> DbInsertFromApi<TModel, TJson>(string query, Namespace? ns = null) where TModel : WoWModel, new() where TJson : WoWJson, new()
         {
-            Repository repository = new Repository();
             TJson json = await _blizzardApiReader.GetAsync<TJson>(query, ns).ConfigureAwait(false);
             TModel model = new TModel();
             model.Load(json);
-            await repository.Insert(model).ConfigureAwait(false);
+            await _dbManager.Insert(model).ConfigureAwait(false);
             return model;
-        }
-
-        public async Task<Realm> GetRealmBySlug(string slug, bool forceUpdate = false)
-        {
-            Repository repository = new Repository();
-            Realm realm = forceUpdate ? await repository.GetRealmBySlug(slug).ConfigureAwait(false) : null;
-            if (realm != null && realm.UpdateDate.AddDays(_config.DataExpiryDays) > DateTime.Now)
-            {
-                await repository.Delete(realm).ConfigureAwait(false);
-                realm = null;
-            }
-            if (realm == null)
-            {
-                realm = await DbInsertFromApi<Realm, RealmJson>($"data/wow/realm/{slug}", Namespace.Dynamic).ConfigureAwait(false);
-            }
-            return realm;
         }
     }
 }

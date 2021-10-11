@@ -30,6 +30,10 @@ namespace WarcraftGuild.WoW.Models
                     BlizzardApiComment = Messages.NOT_FOUND;
                     break;
 
+                case System.Net.HttpStatusCode.TooManyRequests:
+                    BlizzardApiComment = Messages.LIMIT_BROKEN;
+                    break;
+
                 default:
                     BlizzardApiComment = Messages.UNKNOWN_ERROR;
                     break;
@@ -43,6 +47,7 @@ namespace WarcraftGuild.WoW.Models
                 BlizzardApiComment = Messages.NOT_FOUND;
                 return false;
             }
+            Load(json);
             return true;
         }
     }

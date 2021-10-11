@@ -1,21 +1,26 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WarcraftGuild.WoW.Configuration;
+using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 
-namespace WarcraftGuild.Core.Helpers
+namespace WarcraftGuild.WoW.Handlers
 {
-    public class Repository
+    public class DbManager : IDbManager
     {
+        private readonly ApiConfiguration _config;
         private readonly IMongoDatabase _db;
 
-        public Repository()
+        public DbManager(IOptions<ApiConfiguration> apiConfiguration)
         {
+            _config = apiConfiguration.Value ?? throw new ArgumentNullException(nameof(apiConfiguration));
             MongoClient client = new MongoClient();
-            _db = client.GetDatabase("WarcraftGuild");
+            _db = client.GetDatabase(_config.DataBaseName);
         }
 
         #region General
