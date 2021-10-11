@@ -10,7 +10,7 @@ namespace WarcraftGuild.WoW.Models
         public string Name { get; set; }
         public Faction Faction { get; set; }
         public Gender Gender { get; set; }
-        public uint RaceID { get; set; }
+        public Race Race { get; set; }
         public uint ClassID { get; set; }
         public ushort Level { get; set; }
         public List<AchievementCompletion> Achievements { get; set; }
@@ -40,7 +40,7 @@ namespace WarcraftGuild.WoW.Models
                 if (characterJson.Class != null)
                     ClassID = characterJson.Class.Id;
                 if (characterJson.Race != null)
-                    RaceID = characterJson.Race.Id;
+                    Race = new Race { BlizzardId = characterJson.Race.Id };
                 Level = characterJson.Level;
             }
         }

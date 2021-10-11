@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace WarcraftGuild.Controllers
 {
     [Route("wow")]

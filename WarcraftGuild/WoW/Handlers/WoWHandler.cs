@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
-using WarcraftGuild.Core.Helpers;
+using WarcraftGuild.WoW.Configuration;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 
@@ -15,10 +16,12 @@ namespace WarcraftGuild.WoW.Handlers
     public class WoWHandler : IWoWHandler
     {
         private readonly IBlizzardApiReader _blizzardApiReader;
+        private readonly IDbManager _dbManager;
 
-        public WoWHandler(IBlizzardApiReader blizzardApiReader)
+        public WoWHandler(IBlizzardApiReader blizzardApiReader, IDbManager dbManager)
         {
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
+            _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
         }
 
         public async Task<Guild> GetGuild(string realmName, string guildName)
@@ -61,14 +64,14 @@ namespace WarcraftGuild.WoW.Handlers
                 FillAchievementCategories(),
                 FillRealms(),
                 FillConnectedRealms(),
+                FillRaces(),
             };
             await Task.WhenAll(InitTasks).ConfigureAwait(false);
         }
 
-        private static async Task<bool> DeleteAllDatas()
+        private async Task<bool> DeleteAllDatas()
         {
-            Repository repository = new Repository();
-            await repository.DropAll();
+            await _dbManager.DropAll();
             return true;
         }
 
@@ -85,9 +88,8 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillConnectedRealm(string path)
         {
-            Repository repository = new Repository();
             ConnectedRealmJson connectedRealmJson = await _blizzardApiReader.GetAsync<ConnectedRealmJson>(path, Namespace.Dynamic).ConfigureAwait(false);
-            await repository.Insert(new ConnectedRealm(connectedRealmJson)).ConfigureAwait(false);
+            await _dbManager.Insert(new ConnectedRealm(connectedRealmJson)).ConfigureAwait(false);
         }
 
         #endregion ConnectedRealms
@@ -105,9 +107,8 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillRealm(string realmSlug)
         {
-            Repository repository = new Repository();
             RealmJson realmJson = await _blizzardApiReader.GetAsync<RealmJson>($"data/wow/realm/{realmSlug}", Namespace.Dynamic).ConfigureAwait(false);
-            await repository.Insert(new Realm(realmJson)).ConfigureAwait(false);
+            await _dbManager.Insert(new Realm(realmJson)).ConfigureAwait(false);
         }
 
         #endregion Realms
@@ -125,7 +126,6 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillAchievement(AchievementJson achievementJson)
         {
-            Repository repository = new Repository();
             AchievementJson result = await _blizzardApiReader.GetAsync<AchievementJson>($"data/wow/achievement/{achievementJson.Id}", Namespace.Static).ConfigureAwait(false);
             if (result.ResultCode != HttpStatusCode.OK)
             {
@@ -136,8 +136,12 @@ namespace WarcraftGuild.WoW.Handlers
             {
                 result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/achievement/{achievementJson.Id}", Namespace.Static).ConfigureAwait(false);
             }
-            await repository.Insert(new Achievement(result)).ConfigureAwait(false);
+            await _dbManager.Insert(new Achievement(result)).ConfigureAwait(false);
         }
+
+        #endregion
+
+        #region AchievementCategories
 
         private async Task FillAchievementCategories()
         {
@@ -150,17 +154,41 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillAchievementCategory(AchievementCategoryJson achievementCategoryJson)
         {
-            Repository repository = new Repository();
             AchievementCategoryJson result = await _blizzardApiReader.GetAsync<AchievementCategoryJson>($"data/wow/achievement-category/{achievementCategoryJson.Id}", Namespace.Static).ConfigureAwait(false);
             if (result.ResultCode != HttpStatusCode.OK)
             {
                 achievementCategoryJson.ResultCode = result.ResultCode;
                 result = achievementCategoryJson;
             }
-            await repository.Insert(new AchievementCategory(result)).ConfigureAwait(false);
+            await _dbManager.Insert(new AchievementCategory(result)).ConfigureAwait(false);
         }
 
-        #endregion Achievements
+        #endregion
+
+
+        #region Races
+
+        private async Task FillRaces()
+        {
+            List<Task> tasks = new List<Task>();
+            RaceIndexJson index = await _blizzardApiReader.GetAsync<RaceIndexJson>("data/wow/playable-race/index", Namespace.Static).ConfigureAwait(false);
+            foreach (RaceJson race in index.Races)
+                tasks.Add(FillRace(race));
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        private async Task FillRace(RaceJson raceJson)
+        {
+            RaceJson result = await _blizzardApiReader.GetAsync<RaceJson>($"data/wow/race/{raceJson.Id}", Namespace.Static).ConfigureAwait(false);
+            if (result.ResultCode != HttpStatusCode.OK)
+            {
+                raceJson.ResultCode = result.ResultCode;
+                result = raceJson;
+            }
+            await _dbManager.Insert(new Race(result)).ConfigureAwait(false);
+        }
+
+        #endregion
 
         private async Task<CharacterJson> CompleteCharacter(CharacterJson character)
         {
