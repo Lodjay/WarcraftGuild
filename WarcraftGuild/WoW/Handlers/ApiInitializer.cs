@@ -13,51 +13,54 @@ using WarcraftGuild.WoW.Models;
 
 namespace WarcraftGuild.WoW.Handlers
 {
-    public class WoWHandler : IWoWHandler
+    public class ApiInitializer : IApiInitializer
     {
         private readonly IBlizzardApiReader _blizzardApiReader;
         private readonly IDbManager _dbManager;
 
-        public WoWHandler(IBlizzardApiReader blizzardApiReader, IDbManager dbManager)
+        public ApiInitializer(IBlizzardApiReader blizzardApiReader, IDbManager dbManager)
         {
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
             _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
         }
 
-        public async Task<Guild> GetGuild(string realmName, string guildName)
+        public async Task InitGuild(string realmSlug, string guildSlug)
         {
-            return await GetGuild(realmName, guildName, false).ConfigureAwait(false);
-        }
-
-        public async Task<Guild> GetGuild(string realmName, string guildName, bool forceRefresh)
-        {
-            Guild guild = new Guild();
-            if (forceRefresh)
+            List<Task> DropTasks = new List<Task>
             {
-                GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmName}/{guildName} ", Namespace.Profile).ConfigureAwait(false);
-                guild.Load(guildJson);
-                GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmName}/{guildName}/achievements ", Namespace.Profile).ConfigureAwait(false);
-                guild.Load(guildAchievementsJson);
-                GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmName}/{guildName}/roster ", Namespace.Profile).ConfigureAwait(false);
-                if (guildRosterJson != null)
-                {
-                    List<Task<CharacterJson>> tasks = new List<Task<CharacterJson>>();
-                    foreach (GuildMemberJson member in guildRosterJson.Members)
-                        if (member.Member != null && member.Member.Realm != null)
-                            tasks.Add(CompleteCharacter(member.Member));
-                    CharacterJson[] results = await Task.WhenAll(tasks);
-                    foreach (CharacterJson result in results)
-                        guildRosterJson.Members.FirstOrDefault(x => x.Member != null && x.Member.Name == result.Name && x.Member.Realm.Slug == result.Realm.Slug).Member = result;
-                }
-                guild.Load(guildRosterJson);
-            }
-
-            return guild;
+                _dbManager.Drop<Guild>(),
+                _dbManager.Drop<Character>()
+            };
+            await Task.WhenAll(DropTasks).ConfigureAwait(false);
+            Guild guild = new Guild
+            {
+                Slug = guildSlug,
+                RealmSlug = realmSlug
+            };
+            GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmSlug}/{guildSlug}", Namespace.Profile).ConfigureAwait(false);
+            guild.Load(guildJson);
+            GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmSlug}/{guildSlug}/achievements", Namespace.Profile).ConfigureAwait(false);
+            guild.Load(guildAchievementsJson);
+            GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmSlug}/{guildSlug}/roster", Namespace.Profile).ConfigureAwait(false);
+            if (guildRosterJson != null)
+                await FillRoster(guildRosterJson).ConfigureAwait(false);
+            guild.Load(guildRosterJson);
+            await _dbManager.Insert(guild).ConfigureAwait(false);
         }
 
         public async Task Init()
         {
-            await DeleteAllDatas().ConfigureAwait(false);
+            List<Task> DropTasks = new List<Task>
+            {
+                _dbManager.Drop<Achievement>(),
+                _dbManager.Drop<AchievementCategory>(),
+                _dbManager.Drop<Realm>(),
+                _dbManager.Drop<ConnectedRealm>(),
+                _dbManager.Drop<Race>(),
+                _dbManager.Drop<Class>(),
+                _dbManager.Drop<Specialization>()
+            };
+            await Task.WhenAll(DropTasks).ConfigureAwait(false);
             List<Task> InitTasks = new List<Task>
             {
                 FillAchievements(),
@@ -68,12 +71,6 @@ namespace WarcraftGuild.WoW.Handlers
                 FillClasses()
             };
             await Task.WhenAll(InitTasks).ConfigureAwait(false);
-        }
-
-        private async Task<bool> DeleteAllDatas()
-        {
-            await _dbManager.DropAll();
-            return true;
         }
 
         #region ConnectedRealms
@@ -239,16 +236,44 @@ namespace WarcraftGuild.WoW.Handlers
 
         #endregion
 
-        private async Task<CharacterJson> CompleteCharacter(CharacterJson character)
+        #region Characters
+        private async Task FillRoster(GuildRosterJson guildRosterJson)
         {
-            CharacterJson result = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{character.Realm.Slug}/{character.Name.ToLower()}", Namespace.Profile).ConfigureAwait(false);
-            if (result.ResultCode != HttpStatusCode.OK)
+            List<Task> tasks = new List<Task>();
+            foreach (GuildMemberJson memberJson in guildRosterJson.Members)
             {
-                character.ResultCode = result.ResultCode;
-                return character;
+                if (memberJson.Member != null && memberJson.Member.Realm != null)
+                {
+                    CharacterJson characterJson = new CharacterJson
+                    {
+                        Id = memberJson.Member.Id,
+                        Name = memberJson.Member.Name,
+                        Realm = new RealmJson { Slug = memberJson.Member.Realm.Slug }
+                    };
+                    tasks.Add(FillCharacter(characterJson));
+                }
+            }
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        private async Task FillCharacter(CharacterJson characterJson)
+        {
+            await _dbManager.DeleteByBlizzardId<Character>(characterJson.Id).ConfigureAwait(false);
+            CharacterJson result = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}", Namespace.Profile).ConfigureAwait(false);
+            CharacterStatusJson characterStatutJson = await _blizzardApiReader.GetAsync<CharacterStatusJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/status", Namespace.Profile).ConfigureAwait(false);
+            bool isValid = characterStatutJson.ResultCode == HttpStatusCode.OK && characterStatutJson.IsValid && characterStatutJson.Id == characterJson.Id;
+            if (result.ResultCode != HttpStatusCode.OK || !isValid)
+            {
+                characterJson.ResultCode = isValid? result.ResultCode : HttpStatusCode.Forbidden;
+                result = characterJson;
             }
             else
-                return result;
+            {
+                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/character-media", Namespace.Profile).ConfigureAwait(false);
+            }
+            if (isValid)
+                await _dbManager.Insert(new Character(result)).ConfigureAwait(false);
         }
+        #endregion
     }
 }

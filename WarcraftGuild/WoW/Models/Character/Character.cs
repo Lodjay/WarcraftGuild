@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Extensions;
 using WarcraftGuild.WoW.Enums;
@@ -15,6 +17,10 @@ namespace WarcraftGuild.WoW.Models
         public ushort Level { get; set; }
         public List<AchievementCompletion> Achievements { get; set; }
         public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; set; }
+        public Uri Avatar { get; set; }
+        public Uri Inset { get; set; }
+        public Uri Main { get; set; }
+        public Uri MainRaw { get; set; }
 
         public Character()
         {
@@ -41,7 +47,31 @@ namespace WarcraftGuild.WoW.Models
                     ClassID = characterJson.Class.Id;
                 if (characterJson.Race != null)
                     Race = new Race { BlizzardId = characterJson.Race.Id };
-                Level = characterJson.Level;
+                Level = characterJson.Level; 
+                if (characterJson.Media != null)
+                {
+                    if (characterJson.Media.Assets != null)
+                    {
+                        if (characterJson.Media.Assets.Any(x => x.Key == "avatar"))
+                            Avatar = new Uri(characterJson.Media.Assets.Find(x => x.Key == "avatar").Value);
+                        if (characterJson.Media.Assets.Any(x => x.Key == "inset"))
+                            Inset = new Uri(characterJson.Media.Assets.Find(x => x.Key == "inset").Value);
+                        if (characterJson.Media.Assets.Any(x => x.Key == "main"))
+                            Main = new Uri(characterJson.Media.Assets.Find(x => x.Key == "main").Value);
+                        if (characterJson.Media.Assets.Any(x => x.Key == "main-raw"))
+                            MainRaw = new Uri(characterJson.Media.Assets.Find(x => x.Key == "main-raw").Value);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(characterJson.Media.AvatarUrl))
+                            Avatar = new Uri(characterJson.Media.AvatarUrl);
+                        if (!string.IsNullOrEmpty(characterJson.Media.InsetUrl))
+                            Inset = new Uri(characterJson.Media.InsetUrl);
+                        if (!string.IsNullOrEmpty(characterJson.Media.RenderUrl))
+                            Main = new Uri(characterJson.Media.RenderUrl);
+                    }
+                }
+
             }
         }
     }

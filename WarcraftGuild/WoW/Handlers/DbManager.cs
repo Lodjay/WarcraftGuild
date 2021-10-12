@@ -113,6 +113,14 @@ namespace WarcraftGuild.WoW.Handlers
             var result = await collection.FindAsync(filter).ConfigureAwait(false);
             return result.FirstOrDefault();
         }
+
+        public async Task<Guild> GetGuildBySlug(string realmSlug, string guildSlug)
+        {
+            var collection = _db.GetCollection<Guild>(typeof(Guild).Name);
+            FilterDefinition<Guild> filter = Builders<Guild>.Filter.Eq("Slug", guildSlug) & Builders<Guild>.Filter.Eq("RealmSlug", realmSlug);
+            var result = await collection.FindAsync(filter).ConfigureAwait(false);
+            return result.FirstOrDefault();
+        }
         #endregion
     }
 }

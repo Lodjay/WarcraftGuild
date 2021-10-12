@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using WarcraftGuild.Core.Helpers;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 
@@ -12,40 +13,24 @@ namespace WarcraftGuild.Controllers
     [ApiController]
     public class WoWController : ControllerBase
     {
-        private readonly IWoWHandler _WoWHandler;
+        private readonly IBlizzardApiHandler _blizzardApiHandler;
         private readonly ILogger<WoWController> _logger;
 
-        public WoWController(IWoWHandler WoWHandler, ILogger<WoWController> logger)
+        public WoWController(IBlizzardApiHandler blizzardApiHandler, ILogger<WoWController> logger)
         {
-            _WoWHandler = WoWHandler ?? throw new ArgumentNullException(nameof(WoWHandler));
+            _blizzardApiHandler = blizzardApiHandler ?? throw new ArgumentNullException(nameof(blizzardApiHandler));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [Route("init")]
+        [Route("guild/{guildName}/{realmName}")]
         [HttpGet]
-        public async Task<IActionResult> InitApi()
-        {
-            try
-            {
-                _logger.LogTrace("Initialize API...");
-                await _WoWHandler.Init();
-                return new OkResult();
-            }
-            catch (Exception ex) when (ex != null)
-            {
-                _logger.LogCritical(ex.Message);
-                return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
-            }
-        }
-
-        [Route("guild/{nameSlug}/{realmSlug}")]
-        [HttpGet]
-        public async Task<IActionResult> GetGuild([FromRoute] string nameSlug, [FromRoute] string realmSlug)
+        public async Task<IActionResult> GetGuild([FromRoute] string guildName, [FromRoute] string realmName)
         {
             try
             {
                 _logger.LogTrace("Call GetGuild");
-                Guild guild = await _WoWHandler.GetGuild(realmSlug.ToLower(), nameSlug.ToLower(), true).ConfigureAwait(false);
+                Guild guild = await _blizzardApiHandler.GetGuildBySlug(realmName.Slugify(), guildName.Slugify()).ConfigureAwait(false);
+                
                 return new JsonResult(guild) { StatusCode = (int)HttpStatusCode.OK };
             }
             catch (Exception ex) when (ex != null)

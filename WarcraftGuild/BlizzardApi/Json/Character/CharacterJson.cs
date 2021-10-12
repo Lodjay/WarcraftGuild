@@ -28,5 +28,7 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("realm")]
         public RealmJson Realm { get; set; }
+
+        public MediaJson Media { get; set; }
     }
 }

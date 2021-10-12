@@ -13,13 +13,13 @@ using Microsoft.Extensions.Options;
 
 namespace WarcraftGuild.WoW.Handlers
 {
-    public class ApiCollector : IApiCollector
+    public class BlizzardApiHandler : IBlizzardApiHandler
     {
         private readonly ApiConfiguration _config;
         private readonly IBlizzardApiReader _blizzardApiReader;
         private readonly IDbManager _dbManager;
 
-        public ApiCollector(IOptions<ApiConfiguration> apiConfiguration, IBlizzardApiReader blizzardApiReader, IDbManager dbManager)
+        public BlizzardApiHandler(IOptions<ApiConfiguration> apiConfiguration, IBlizzardApiReader blizzardApiReader, IDbManager dbManager)
         {
             _config = apiConfiguration.Value ?? throw new ArgumentNullException(nameof(apiConfiguration));
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
@@ -42,6 +42,21 @@ namespace WarcraftGuild.WoW.Handlers
             if (update)
                 realm = await DbInsertFromApi<Realm, RealmJson>($"data/wow/realm/{slug}", Namespace.Dynamic).ConfigureAwait(false);
             return realm;
+        }
+
+        public async Task<Guild> GetGuildBySlug(string realmSlug, string guildSlug, bool forceUpdate = false)
+        {
+            Realm realm = await GetRealmBySlug(realmSlug, forceUpdate).ConfigureAwait(false);
+            Guild guild = forceUpdate ? null : await _dbManager.GetGuildBySlug(realm.Slug, guildSlug).ConfigureAwait(false);
+            bool update = forceUpdate || await CheckDbData(guild).ConfigureAwait(false);
+            if (update)
+            {
+                guild = await DbInsertFromApi<Guild, GuildJson>($"data/wow/guild/{realm.Slug}/{guildSlug}", Namespace.Dynamic).ConfigureAwait(false);
+                guild.Slug = guildSlug;
+                guild.Load(await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{guild}/{guildSlug}/achievements", Namespace.Profile).ConfigureAwait(false));
+                guild.Load(await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{guild}/{guildSlug}/roster ", Namespace.Profile).ConfigureAwait(false));
+            }
+            return guild;
         }
 
         private async Task<TModel> GetFromDbByBlizzardId<TModel>(ulong blizzardId) where TModel : WoWModel, new()

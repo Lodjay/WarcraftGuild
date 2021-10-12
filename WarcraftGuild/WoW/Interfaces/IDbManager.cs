@@ -26,6 +26,7 @@ namespace WarcraftGuild.WoW.Interfaces
 
         #region Specific
         Task<Realm> GetRealmBySlug(string slug);
+        Task<Guild> GetGuildBySlug(string realmSlug, string guildSlug);
         #endregion
     }
 }

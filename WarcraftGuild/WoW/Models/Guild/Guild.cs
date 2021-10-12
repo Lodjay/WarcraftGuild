@@ -10,6 +10,8 @@ namespace WarcraftGuild.WoW.Models
     public class Guild : WoWModel
     {
         public string Name { get; set; }
+        public string Slug { get; set; }
+        public string RealmSlug { get; set; }
         public GuildCrest Crest { get; set; }
         public Faction Faction { get; set; }
         public DateTime CreationDate { get; set; }

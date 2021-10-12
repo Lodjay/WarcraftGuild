@@ -39,8 +39,8 @@ namespace WarcraftGuild
             services.Configure<ApiConfiguration>(config => Configuration.GetSection("ApiConfiguration").Bind(config));
             services.AddHttpClient();
             services.AddSingleton<IBlizzardApiReader, BlizzardApiReader>();
-            services.AddSingleton<IWoWHandler, WoWHandler>();
-            services.AddSingleton<IApiCollector, ApiCollector>();
+            services.AddSingleton<IApiInitializer, ApiInitializer>();
+            services.AddSingleton<IBlizzardApiHandler, BlizzardApiHandler>();
             services.AddSingleton<IWebClient, ApiWebClient>();
             services.AddSingleton<IDbManager, DbManager>();
             services.AddSwaggerGen(c =>

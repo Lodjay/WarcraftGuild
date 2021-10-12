@@ -10,5 +10,13 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
+
+        // Old type? 
+        [JsonPropertyName("avatar_url")]
+        public string AvatarUrl { get; set; }
+        [JsonPropertyName("bust_url")]
+        public string InsetUrl { get; set; }
+        [JsonPropertyName("render_url")]
+        public string RenderUrl { get; set; }
     }
 }
