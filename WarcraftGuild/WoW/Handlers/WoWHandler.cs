@@ -65,6 +65,7 @@ namespace WarcraftGuild.WoW.Handlers
                 FillRealms(),
                 FillConnectedRealms(),
                 FillRaces(),
+                FillClasses()
             };
             await Task.WhenAll(InitTasks).ConfigureAwait(false);
         }
@@ -186,6 +187,54 @@ namespace WarcraftGuild.WoW.Handlers
                 result = raceJson;
             }
             await _dbManager.Insert(new Race(result)).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Classes
+
+        private async Task FillClasses()
+        {
+            List<Task> tasks = new List<Task>();
+            ClassIndexJson index = await _blizzardApiReader.GetAsync<ClassIndexJson>("data/wow/playable-class/index", Namespace.Static).ConfigureAwait(false);
+            foreach (ClassJson classJson in index.Classes)
+                tasks.Add(FillClass(classJson));
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        private async Task FillClass(ClassJson classJson)
+        {
+            ClassJson result = await _blizzardApiReader.GetAsync<ClassJson>($"data/wow/playable-class/{classJson.Id}", Namespace.Static).ConfigureAwait(false);
+            if (result.ResultCode != HttpStatusCode.OK)
+            {
+                classJson.ResultCode = result.ResultCode;
+                result = classJson;
+            }
+            else
+            {
+                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-class/{classJson.Id}", Namespace.Static).ConfigureAwait(false);
+
+                List<Task> subTasks = new List<Task>(); 
+                foreach (SpecializationJson specializationJson in result.Specializations)
+                    subTasks.Add(FillSpecialization(specializationJson));
+                await Task.WhenAll(subTasks).ConfigureAwait(false);
+            }
+            await _dbManager.Insert(new Class(result)).ConfigureAwait(false);
+        }
+
+        private async Task FillSpecialization(SpecializationJson specializationJson)
+        {
+            SpecializationJson result = await _blizzardApiReader.GetAsync<SpecializationJson>($"data/wow/playable-specialization/{specializationJson.Id}", Namespace.Static).ConfigureAwait(false);
+            if (result.ResultCode != HttpStatusCode.OK)
+            {
+                specializationJson.ResultCode = result.ResultCode;
+                result = specializationJson;
+            }
+            else
+            {
+                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-specialization/{specializationJson.Id}", Namespace.Static).ConfigureAwait(false);
+            }
+            await _dbManager.Insert(new Specialization(result)).ConfigureAwait(false);
         }
 
         #endregion

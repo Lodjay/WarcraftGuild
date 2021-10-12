@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class GenderNameJson
+    public class GenderTextJson
     {
         [JsonPropertyName("male")]
         public string Male { get; set; }

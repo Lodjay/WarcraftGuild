@@ -19,7 +19,12 @@ namespace WarcraftGuild.WoW.Handlers
         public DbManager(IOptions<ApiConfiguration> apiConfiguration)
         {
             _config = apiConfiguration.Value ?? throw new ArgumentNullException(nameof(apiConfiguration));
-            MongoClient client = new MongoClient();
+            MongoClientSettings settings = new MongoClientSettings
+            {
+                MinConnectionPoolSize = 100,
+                MaxConnectionPoolSize = 500
+            };
+            MongoClient client = new MongoClient(settings);
             _db = client.GetDatabase(_config.DataBaseName);
         }
 

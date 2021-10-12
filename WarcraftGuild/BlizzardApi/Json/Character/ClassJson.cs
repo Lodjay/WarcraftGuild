@@ -1,14 +1,25 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class ClassJson
+    public class ClassJson : WoWJson
     {
         [JsonPropertyName("id")]
         public uint Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
+
+        [JsonPropertyName("gender_name")]
+        public GenderTextJson GenderNames { get; set; }
+
+        [JsonPropertyName("power_type")]
+        public TypeJson PowerType { get; set; }
+
+        [JsonPropertyName("specializations")]
+        public List<SpecializationJson> Specializations { get; set; }
+        public MediaJson Media { get; set; }
     }
 }
