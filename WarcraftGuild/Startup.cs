@@ -11,6 +11,10 @@ using WarcraftGuild.BlizzardApi.Interfaces;
 using WarcraftGuild.WoW.Configuration;
 using WarcraftGuild.WoW.Handlers;
 using WarcraftGuild.WoW.Interfaces;
+using Serilog;
+using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Reflection;
 
 namespace WarcraftGuild
 {
@@ -25,7 +29,18 @@ namespace WarcraftGuild
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{hostEnv.EnvironmentName}.json", optional: true, reloadOnChange: true);
             builder.AddEnvironmentVariables();
+
             Configuration = builder.Build();
+            string fileName = "logs.log";
+            string rootPath = Path.GetPathRoot(Assembly.GetEntryAssembly().Location);
+            string DbName = Configuration.GetSection("ApiConfiguration").GetSection("DataBaseName").Value;
+            string filePath = Path.Combine(rootPath, "Logs", DbName, fileName);
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Debug()
+                .WriteTo.File(filePath)
+                .WriteTo.MongoDB($"mongodb://localhost:27017/{DbName}", "Logs")
+                .CreateLogger();
+
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -49,7 +64,7 @@ namespace WarcraftGuild
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory logger)
         {
             if (env.IsDevelopment())
             {
@@ -57,6 +72,8 @@ namespace WarcraftGuild
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WarcraftGuild v1"));
             }
+
+            logger.AddSerilog();
 
             app.UseHttpsRedirection();
 
