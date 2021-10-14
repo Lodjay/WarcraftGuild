@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class GuildCrestEmblemJson : WoWJson
+    public class GuildCrestEmblemJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public uint Id { get; set; }

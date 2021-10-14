@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class GuildCrestBorderJson : WoWJson
+    public class GuildCrestBorderJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }

@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class ColorCodeApiData : WoWJson
+    public class ColorCodeApiData : BlizzardApiJsonResponse
     {
         [JsonPropertyName("r")]
         public byte R { get; set; }

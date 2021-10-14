@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class GuildRosterJson : WoWJson
+    public class GuildRosterJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("members")]
         public IEnumerable<GuildMemberJson> Members { get; set; }

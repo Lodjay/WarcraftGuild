@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class GuildAchievementsJson : WoWJson
+    public class GuildAchievementsJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("total_quantity")]
         public uint TotalQuantity { get; set; }

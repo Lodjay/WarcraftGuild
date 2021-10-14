@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class TypeJson : WoWJson
+    public class TypeJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }

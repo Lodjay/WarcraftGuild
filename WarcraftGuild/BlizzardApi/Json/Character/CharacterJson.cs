@@ -3,7 +3,7 @@
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class CharacterJson : WoWJson
+    public class CharacterJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }

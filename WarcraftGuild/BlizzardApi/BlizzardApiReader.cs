@@ -45,7 +45,7 @@ namespace WarcraftGuild.BlizzardApi
             }
         }
 
-        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : Json.WoWJson, new()
+        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : Json.BlizzardApiJsonResponse, new()
         {
             ThrowIfInvalidRequest();
             if (HasTokenExpired())

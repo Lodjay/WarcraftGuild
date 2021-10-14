@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class GuildCrestBackgroundJson : WoWJson
+    public class GuildCrestBackgroundJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("color")]
         public ColorJson Color { get; set; }

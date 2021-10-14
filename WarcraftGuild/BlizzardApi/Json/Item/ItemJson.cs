@@ -2,7 +2,7 @@
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class ItemJson : WoWJson
+    public class ItemJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public uint Id { get; set; }

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class ItemClassIndexJson : WoWJson
+    public class ItemClassIndexJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("item_classes")]
         public List<ItemClassJson> ItemClasses { get; set; }

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class ConnectedRealmIndexJson : WoWJson
+    public class ConnectedRealmIndexJson : BlizzardApiJsonResponse
     {
 
         [JsonPropertyName("connected_realms")]

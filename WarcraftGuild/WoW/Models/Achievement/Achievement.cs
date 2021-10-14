@@ -11,6 +11,7 @@ namespace WarcraftGuild.WoW.Models
         public uint Points { get; set; }
         public bool AccountWide { get; set; }
         public int Order { get; set; }
+        public AchievementCriterion Criterion { get; set; }
         public ulong CategoryId { get; set; }
         public ulong PrerequisiteId { get; set; }
         public Uri Icon { get; set; }
@@ -34,6 +35,10 @@ namespace WarcraftGuild.WoW.Models
                 Points = achievementJson.Points;
                 AccountWide = achievementJson.AccountWide;
                 Order = achievementJson.Order;
+                if (achievementJson.Criterion != null)
+                    Criterion = new AchievementCriterion(achievementJson.Criterion);
+                else
+                    Criterion = null;
                 if (achievementJson.Category != null)
                     CategoryId = achievementJson.Category.Id;
                 if (achievementJson.Prerequisite != null)

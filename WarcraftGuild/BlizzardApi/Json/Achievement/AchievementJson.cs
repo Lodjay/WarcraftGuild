@@ -3,7 +3,7 @@
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class AchievementJson : WoWJson
+    public class AchievementJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
@@ -22,6 +22,9 @@ namespace WarcraftGuild.BlizzardApi.Json
 
         [JsonPropertyName("display_order")]
         public int Order { get; set; }
+
+        [JsonPropertyName("criteria")]
+        public AchievementCriterionJson Criterion { get; set; }
 
         [JsonPropertyName("category")]
         public AchievementCategoryJson Category { get; set; }

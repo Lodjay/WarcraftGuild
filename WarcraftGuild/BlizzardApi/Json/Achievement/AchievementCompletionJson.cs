@@ -3,7 +3,7 @@
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class AchievementCompletionJson : WoWJson
+    public class AchievementCompletionJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }

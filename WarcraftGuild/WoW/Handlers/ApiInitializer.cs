@@ -24,6 +24,21 @@ namespace WarcraftGuild.WoW.Handlers
             _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
         }
 
+        public async Task Init()
+        {
+            await _dbManager.DropAll().ConfigureAwait(false);
+            List<Task> InitTasks = new List<Task>
+            {
+                FillAchievements(),
+                FillAchievementCategories(),
+                FillRealms(),
+                FillConnectedRealms(),
+                FillRaces(),
+                FillClasses()
+            };
+            await Task.WhenAll(InitTasks).ConfigureAwait(false);
+        }
+
         public async Task InitGuild(string realmSlug, string guildSlug)
         {
             List<Task> DropTasks = new List<Task>
@@ -46,31 +61,6 @@ namespace WarcraftGuild.WoW.Handlers
                 await FillRoster(guildRosterJson).ConfigureAwait(false);
             guild.Load(guildRosterJson);
             await _dbManager.Insert(guild).ConfigureAwait(false);
-        }
-
-        public async Task Init()
-        {
-            List<Task> DropTasks = new List<Task>
-            {
-                _dbManager.Drop<Achievement>(),
-                _dbManager.Drop<AchievementCategory>(),
-                _dbManager.Drop<Realm>(),
-                _dbManager.Drop<ConnectedRealm>(),
-                _dbManager.Drop<Race>(),
-                _dbManager.Drop<Class>(),
-                _dbManager.Drop<Specialization>()
-            };
-            await Task.WhenAll(DropTasks).ConfigureAwait(false);
-            List<Task> InitTasks = new List<Task>
-            {
-                FillAchievements(),
-                FillAchievementCategories(),
-                FillRealms(),
-                FillConnectedRealms(),
-                FillRaces(),
-                FillClasses()
-            };
-            await Task.WhenAll(InitTasks).ConfigureAwait(false);
         }
 
         #region ConnectedRealms

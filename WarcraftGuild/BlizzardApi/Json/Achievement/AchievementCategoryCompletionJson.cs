@@ -3,7 +3,7 @@
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class AchievementCategoryCompletionJson : WoWJson
+    public class AchievementCategoryCompletionJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("category")]
         public AchievementCategoryJson Category { get; set; }

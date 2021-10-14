@@ -77,7 +77,7 @@ namespace WarcraftGuild.WoW.Handlers
             return false;
         }
 
-        private async Task<TModel> DbInsertFromApi<TModel, TJson>(string query, Namespace? ns = null) where TModel : WoWModel, new() where TJson : WoWJson, new()
+        private async Task<TModel> DbInsertFromApi<TModel, TJson>(string query, Namespace? ns = null) where TModel : WoWModel, new() where TJson : BlizzardApiJsonResponse, new()
         {
             TJson json = await _blizzardApiReader.GetAsync<TJson>(query, ns).ConfigureAwait(false);
             TModel model = new TModel();

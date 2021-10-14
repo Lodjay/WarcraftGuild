@@ -3,7 +3,7 @@
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class GuildMemberJson : WoWJson
+    public class GuildMemberJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("character")]
         public CharacterJson Member { get; set; }

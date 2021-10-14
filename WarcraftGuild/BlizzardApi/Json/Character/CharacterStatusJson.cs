@@ -3,7 +3,7 @@
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class CharacterStatusJson : WoWJson
+    public class CharacterStatusJson : BlizzardApiJsonResponse
     {
 
         [JsonPropertyName("id")]

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace WarcraftGuild.BlizzardApi.Json
 {
-    public class MediaJson : WoWJson
+    public class MediaJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("assets")]
         public List<AssetJson> Assets { get; set; }

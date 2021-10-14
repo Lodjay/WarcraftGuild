@@ -2,8 +2,9 @@
 
 namespace WarcraftGuild.WoW.Models
 {
-    public class AchievementCategoryCompletion : WoWModel
+    public class AchievementCategoryCompletion
     {
+        public ulong CategoryId { get; set; }
         public uint Quantity { get; set; }
         public uint Points { get; set; }
 
@@ -18,9 +19,9 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(AchievementCategoryCompletionJson achievementCategoryCompletionJson)
         {
-            if (CheckJson(achievementCategoryCompletionJson))
+            if (achievementCategoryCompletionJson != null)
             {
-                BlizzardId = achievementCategoryCompletionJson.Category.Id;
+                CategoryId = achievementCategoryCompletionJson.Category.Id;
                 Quantity = achievementCategoryCompletionJson.Quantity;
                 Points = achievementCategoryCompletionJson.Points;
             }

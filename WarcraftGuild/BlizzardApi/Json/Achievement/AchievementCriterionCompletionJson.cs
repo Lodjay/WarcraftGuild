@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace WarcraftGuild.BlizzardApi.Json
 
 {
-    public class AchievementCriterionCompletionJson : WoWJson
+    public class AchievementCriterionCompletionJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
