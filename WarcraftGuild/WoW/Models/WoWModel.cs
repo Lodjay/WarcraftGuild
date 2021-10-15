@@ -9,7 +9,6 @@ namespace WarcraftGuild.WoW.Models
     {
         [BsonId]
         public Guid Id { get; set; }
-
         public ulong BlizzardId { get; set; }
         public string BlizzardApiComment { get; set; }
         public DateTime UpdateDate { get; set; }

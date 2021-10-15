@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -59,13 +60,6 @@ namespace WarcraftGuild.WoW.Handlers
             return result.FirstOrDefault();
         }
 
-        public async Task DeleteAll<T>() where T : WoWModel, new()
-        {
-            var collection = _db.GetCollection<T>(typeof(T).Name);
-            FilterDefinition<T> filter = Builders<T>.Filter.Empty;
-            await collection.DeleteManyAsync(filter);
-        }
-
         public async Task Delete<T>(T data) where T : WoWModel, new()
         {
             await DeleteByBlizzardId<T>(data.BlizzardId).ConfigureAwait(false);
@@ -75,6 +69,7 @@ namespace WarcraftGuild.WoW.Handlers
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("Id", id);
+            var result = await collection.FindAsync(filter).ConfigureAwait(false);
             await collection.DeleteOneAsync(filter);
         }
 
@@ -102,6 +97,16 @@ namespace WarcraftGuild.WoW.Handlers
             foreach (string collection in collections.ToList())
                 tasks.Add(Drop(collection));
             await Task.WhenAll(tasks);
+        }
+        #endregion
+
+        #region Logging
+
+        public async Task Log(LogEvent log)
+        {
+            log.LogDate = DateTime.Now;
+            var collection = _db.GetCollection<LogEvent>("Logs");
+            await collection.InsertOneAsync(log).ConfigureAwait(false);
         }
         #endregion
 

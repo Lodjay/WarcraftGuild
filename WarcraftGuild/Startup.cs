@@ -37,8 +37,9 @@ namespace WarcraftGuild
             string filePath = Path.Combine(rootPath, "Logs", DbName, fileName);
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Debug()
+                .WriteTo.Console()
                 .WriteTo.File(filePath)
-                .WriteTo.MongoDB($"mongodb://localhost:27017/{DbName}", "Logs")
+                //.WriteTo.MongoDB($"mongodb://localhost:27017/{DbName}", "Logs")
                 .CreateLogger();
 
         }

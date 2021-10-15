@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
-using WarcraftGuild.WoW.Configuration;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 
@@ -119,6 +117,14 @@ namespace WarcraftGuild.WoW.Handlers
             {
                 achievementJson.ResultCode = result.ResultCode;
                 result = achievementJson;
+                await _dbManager.Log(new LogEvent
+                {
+                    Message = "Unabled to reach BlizzardAPI",
+                    Description = $"Return code {result.ResultCode}",
+                    Collection = "Achievement",
+                    BlizzardId = achievementJson.Id,
+                    Severity = LogLevel.Warning
+                }).ConfigureAwait(false);
             }
             else
             {
@@ -127,7 +133,7 @@ namespace WarcraftGuild.WoW.Handlers
             await _dbManager.Insert(new Achievement(result)).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion Achievements
 
         #region AchievementCategories
 
@@ -147,12 +153,19 @@ namespace WarcraftGuild.WoW.Handlers
             {
                 achievementCategoryJson.ResultCode = result.ResultCode;
                 result = achievementCategoryJson;
+                await _dbManager.Log(new LogEvent
+                {
+                    Message = "Unabled to reach BlizzardAPI",
+                    Description = $"Return code {result.ResultCode}",
+                    Collection = "AchievementCategory",
+                    BlizzardId = achievementCategoryJson.Id,
+                    Severity = LogLevel.Warning
+                }).ConfigureAwait(false);
             }
             await _dbManager.Insert(new AchievementCategory(result)).ConfigureAwait(false);
         }
 
-        #endregion
-
+        #endregion AchievementCategories
 
         #region Races
 
@@ -172,11 +185,19 @@ namespace WarcraftGuild.WoW.Handlers
             {
                 raceJson.ResultCode = result.ResultCode;
                 result = raceJson;
+                await _dbManager.Log(new LogEvent
+                {
+                    Message = "Unabled to reach BlizzardAPI",
+                    Description = $"Return code {result.ResultCode}",
+                    Collection = "Race",
+                    BlizzardId = raceJson.Id,
+                    Severity = LogLevel.Warning
+                }).ConfigureAwait(false);
             }
             await _dbManager.Insert(new Race(result)).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion Races
 
         #region Classes
 
@@ -196,12 +217,20 @@ namespace WarcraftGuild.WoW.Handlers
             {
                 classJson.ResultCode = result.ResultCode;
                 result = classJson;
+                await _dbManager.Log(new LogEvent
+                {
+                    Message = "Unabled to reach BlizzardAPI",
+                    Description = $"Return code {result.ResultCode}",
+                    Collection = "Class",
+                    BlizzardId = classJson.Id,
+                    Severity = LogLevel.Warning
+                }).ConfigureAwait(false);
             }
             else
             {
                 result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-class/{classJson.Id}", Namespace.Static).ConfigureAwait(false);
 
-                List<Task> subTasks = new List<Task>(); 
+                List<Task> subTasks = new List<Task>();
                 foreach (SpecializationJson specializationJson in result.Specializations)
                     subTasks.Add(FillSpecialization(specializationJson));
                 await Task.WhenAll(subTasks).ConfigureAwait(false);
@@ -216,6 +245,14 @@ namespace WarcraftGuild.WoW.Handlers
             {
                 specializationJson.ResultCode = result.ResultCode;
                 result = specializationJson;
+                await _dbManager.Log(new LogEvent
+                {
+                    Message = "Unabled to reach BlizzardAPI",
+                    Description = $"Return code {result.ResultCode}",
+                    Collection = "Specialization",
+                    BlizzardId = specializationJson.Id,
+                    Severity = LogLevel.Warning
+                }).ConfigureAwait(false);
             }
             else
             {
@@ -224,9 +261,10 @@ namespace WarcraftGuild.WoW.Handlers
             await _dbManager.Insert(new Specialization(result)).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion Classes
 
         #region Characters
+
         private async Task FillRoster(GuildRosterJson guildRosterJson)
         {
             List<Task> tasks = new List<Task>();
@@ -250,20 +288,49 @@ namespace WarcraftGuild.WoW.Handlers
         {
             await _dbManager.DeleteByBlizzardId<Character>(characterJson.Id).ConfigureAwait(false);
             CharacterJson result = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}", Namespace.Profile).ConfigureAwait(false);
-            CharacterStatusJson characterStatutJson = await _blizzardApiReader.GetAsync<CharacterStatusJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/status", Namespace.Profile).ConfigureAwait(false);
-            bool isValid = characterStatutJson.ResultCode == HttpStatusCode.OK && characterStatutJson.IsValid && characterStatutJson.Id == characterJson.Id;
-            if (result.ResultCode != HttpStatusCode.OK || !isValid)
+            bool isValid;
+            if (result.ResultCode != HttpStatusCode.OK)
             {
-                characterJson.ResultCode = isValid? result.ResultCode : HttpStatusCode.Forbidden;
+                await _dbManager.Log(new LogEvent
+                {
+                    Message = "Unabled to reach BlizzardAPI",
+                    Description = $"Return code {result.ResultCode}",
+                    Collection = "Character",
+                    BlizzardId = characterJson.Id,
+                    KeyData = $"{characterJson.Name}-{characterJson.Realm.Slug}",
+                    Severity = LogLevel.Warning
+                }).ConfigureAwait(false);
+
+                characterJson.ResultCode = result.ResultCode;
                 result = characterJson;
+                isValid = true;
             }
             else
             {
-                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/character-media", Namespace.Profile).ConfigureAwait(false);
+                CharacterStatusJson characterStatutJson = await _blizzardApiReader.GetAsync<CharacterStatusJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/status", Namespace.Profile).ConfigureAwait(false);
+                isValid = characterStatutJson.ResultCode == HttpStatusCode.OK && characterStatutJson.IsValid && characterStatutJson.Id == characterJson.Id;
+                if (isValid)
+                {
+                    result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/character-media", Namespace.Profile).ConfigureAwait(false);
+                }
+                else
+                {
+                    await _dbManager.Log(new LogEvent
+                    {
+                        Message = "Character Invalid",
+                        Description = $"Blizzard API return invalid status (character may be innactive or deleted)",
+                        Collection = "Character",
+                        BlizzardId = characterJson.Id,
+                        KeyData = $"{characterJson.Name}-{characterJson.Realm.Slug}",
+                        Severity = LogLevel.Warning
+                    }).ConfigureAwait(false);
+                    await _dbManager.DeleteByBlizzardId<Character>(characterJson.Id).ConfigureAwait(false);
+                }
             }
             if (isValid)
                 await _dbManager.Insert(new Character(result)).ConfigureAwait(false);
         }
-        #endregion
+
+        #endregion Characters
     }
 }
