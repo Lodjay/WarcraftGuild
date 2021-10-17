@@ -5,6 +5,7 @@ namespace WarcraftGuild.WoW.Models
     public class GuildMember
     {
         public int Rank { get; set; }
+        public string Comment { get; set; }
         public ulong CharacterId { get; set; }
         public string CharacterName { get; set; }
         public string CharacterRealmSlug { get; set; }

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WarcraftGuild.Core.Handlers;
+using WarcraftGuild.Core.Models;
 using WarcraftGuild.WoW.Handlers;
 using WarcraftGuild.WoW.Models;
 
@@ -32,6 +34,10 @@ namespace WarcraftGuild.WoW.Interfaces
         #region Specific
         Task<Realm> GetRealmBySlug(string slug);
         Task<Guild> GetGuildBySlug(string realmSlug, string guildSlug);
+        #endregion
+
+        #region NativeDatas
+        Task Insert(LocaleString locale);
         #endregion
 
     }

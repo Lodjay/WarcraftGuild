@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WarcraftGuild.Core.Handlers;
+using WarcraftGuild.Core.Models;
 using WarcraftGuild.WoW.Configuration;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
@@ -125,6 +127,14 @@ namespace WarcraftGuild.WoW.Handlers
             FilterDefinition<Guild> filter = Builders<Guild>.Filter.Eq("Slug", guildSlug) & Builders<Guild>.Filter.Eq("RealmSlug", realmSlug);
             var result = await collection.FindAsync(filter).ConfigureAwait(false);
             return result.FirstOrDefault();
+        }
+        #endregion
+
+        #region NativeDatas
+        public async Task Insert(LocaleString locale)
+        {
+            var collection = _db.GetCollection<LocaleString>("LocaleString");
+            await collection.InsertOneAsync(locale).ConfigureAwait(false);
         }
         #endregion
     }

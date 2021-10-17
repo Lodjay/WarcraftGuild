@@ -21,6 +21,11 @@ namespace WarcraftGuild.WoW.Models
         public Uri Inset { get; set; }
         public Uri Main { get; set; }
         public Uri MainRaw { get; set; }
+        public ulong? MainId { get; set; }
+        public Role MainRole { get; set; }
+        public string Description { get; set; }
+
+        public bool IsMain { get { return !MainId.HasValue; } }
 
         public Character()
         {

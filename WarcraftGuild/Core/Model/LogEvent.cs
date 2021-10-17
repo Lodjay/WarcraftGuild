@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 
-namespace WarcraftGuild.WoW.Handlers
+namespace WarcraftGuild.Core.Handlers
 {
     public class LogEvent
     {

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
+using WarcraftGuild.Core.Handlers;
+using WarcraftGuild.Core.Helpers;
+using WarcraftGuild.Core.Models;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
 
@@ -32,7 +35,8 @@ namespace WarcraftGuild.WoW.Handlers
                 FillRealms(),
                 FillConnectedRealms(),
                 FillRaces(),
-                FillClasses()
+                FillClasses(),
+                InitLocaleString(),
             };
             await Task.WhenAll(InitTasks).ConfigureAwait(false);
         }
@@ -60,6 +64,8 @@ namespace WarcraftGuild.WoW.Handlers
             guild.Load(guildRosterJson);
             await _dbManager.Insert(guild).ConfigureAwait(false);
         }
+
+        #region BlizzardAPIDatas
 
         #region ConnectedRealms
 
@@ -332,5 +338,23 @@ namespace WarcraftGuild.WoW.Handlers
         }
 
         #endregion Characters
+
+        #endregion
+
+        #region WoWGuildApiDatas
+
+        #region LocaleStrings
+
+        public async Task InitLocaleString()
+        {
+            List<Task> tasks = new List<Task>();
+            foreach (LocaleString locale in LocaleStringInitializer.Generate())
+                tasks.Add(_dbManager.Insert(locale));
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #endregion
     }
 }

@@ -22,19 +22,19 @@ namespace WarcraftGuild.WoW.Models
                     break;
 
                 case System.Net.HttpStatusCode.Forbidden:
-                    BlizzardApiComment = Messages.FORBIDDEN;
+                    BlizzardApiComment = LocaleStringCode.BLIZZ_API_RESPONSE_FORBIDDEN;
                     break;
 
                 case System.Net.HttpStatusCode.NotFound:
-                    BlizzardApiComment = Messages.NOT_FOUND;
+                    BlizzardApiComment = LocaleStringCode.BLIZZ_API_RESPONSE_NOT_FOUND;
                     break;
 
                 case System.Net.HttpStatusCode.TooManyRequests:
-                    BlizzardApiComment = Messages.LIMIT_BROKEN;
+                    BlizzardApiComment = LocaleStringCode.BLIZZ_API_LIMIT_REACHED;
                     break;
 
                 default:
-                    BlizzardApiComment = Messages.UNKNOWN_ERROR;
+                    BlizzardApiComment = LocaleStringCode.UNKNOWN_ERROR;
                     break;
             }
         }
@@ -43,7 +43,7 @@ namespace WarcraftGuild.WoW.Models
         {
             if (json == null)
             {
-                BlizzardApiComment = Messages.NOT_FOUND;
+                BlizzardApiComment = LocaleStringCode.BLIZZ_API_RESPONSE_EMPTY;
                 return false;
             }
             Load(json);
