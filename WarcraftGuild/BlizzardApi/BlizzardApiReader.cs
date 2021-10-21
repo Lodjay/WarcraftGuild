@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
+using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.BlizzardApi.Models;
 using WarcraftGuild.Core.Enums;
 using WarcraftGuild.Core.Exceptions;
@@ -45,7 +46,7 @@ namespace WarcraftGuild.BlizzardApi
             }
         }
 
-        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : Json.BlizzardApiJsonResponse, new()
+        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, string additionalParams = null) where WoWJson : BlizzardApiJsonResponse, new()
         {
             ThrowIfInvalidRequest();
             if (HasTokenExpired())

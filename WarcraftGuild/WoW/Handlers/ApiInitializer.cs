@@ -11,32 +11,95 @@ using WarcraftGuild.Core.Helpers;
 using WarcraftGuild.Core.Models;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
+using WarcraftGuild.WoWHeadApi;
 
 namespace WarcraftGuild.WoW.Handlers
 {
     public class ApiInitializer : IApiInitializer
     {
         private readonly IBlizzardApiReader _blizzardApiReader;
+        private readonly IWoWHeadApiReader _wowHeadApiReader;
         private readonly IDbManager _dbManager;
 
-        public ApiInitializer(IBlizzardApiReader blizzardApiReader, IDbManager dbManager)
+        public ApiInitializer(IBlizzardApiReader blizzardApiReader, IWoWHeadApiReader wowHeadApiReader, IDbManager dbManager)
         {
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
+            _wowHeadApiReader = wowHeadApiReader ?? throw new ArgumentNullException(nameof(wowHeadApiReader));
             _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
         }
 
-        public async Task Init()
+        public async Task InitAll()
         {
-            await _dbManager.DropAll().ConfigureAwait(false);
+            List<Task> InitTasks = new List<Task>
+            {
+                InitRealms(),
+                InitAchievements(),
+                InitApiDatas(),
+                InitCharacterDatas(),
+            };
+            await Task.WhenAll(InitTasks).ConfigureAwait(false);
+        }
+
+
+        public async Task InitApiDatas()
+        {
+            List<Task> DropTasks = new List<Task>
+            {
+                _dbManager.Drop("LocaleString"),
+            };
+            await Task.WhenAll(DropTasks).ConfigureAwait(false);
+            List<Task> InitTasks = new List<Task>
+            {
+                InitLocaleString(),
+            };
+            await Task.WhenAll(InitTasks).ConfigureAwait(false);
+        }
+
+        public async Task InitAchievements()
+        {
+            List<Task> DropTasks = new List<Task>
+            {
+                _dbManager.Drop<Achievement>(),
+                _dbManager.Drop<AchievementCategory>()
+            };
+            await Task.WhenAll(DropTasks).ConfigureAwait(false);
             List<Task> InitTasks = new List<Task>
             {
                 FillAchievements(),
-                FillAchievementCategories(),
+                FillAchievementCategories()
+            };
+            await Task.WhenAll(InitTasks).ConfigureAwait(false);
+        }
+
+        public async Task InitRealms()
+        {
+            List<Task> DropTasks = new List<Task>
+            {
+                _dbManager.Drop<Realm>(),
+                _dbManager.Drop<ConnectedRealm>()
+            };
+            await Task.WhenAll(DropTasks).ConfigureAwait(false);
+            List<Task> InitTasks = new List<Task>
+            {
                 FillRealms(),
                 FillConnectedRealms(),
+            };
+            await Task.WhenAll(InitTasks).ConfigureAwait(false);
+        }
+
+        public async Task InitCharacterDatas()
+        {
+            List<Task> DropTasks = new List<Task>
+            {
+                _dbManager.Drop<Race>(),
+                _dbManager.Drop<Class>(),
+                _dbManager.Drop<Specialization>(),
+            };
+            await Task.WhenAll(DropTasks).ConfigureAwait(false);
+            List<Task> InitTasks = new List<Task>
+            {
                 FillRaces(),
                 FillClasses(),
-                InitLocaleString(),
             };
             await Task.WhenAll(InitTasks).ConfigureAwait(false);
         }
@@ -352,7 +415,6 @@ namespace WarcraftGuild.WoW.Handlers
                 tasks.Add(_dbManager.Insert(locale));
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
-
         #endregion
 
         #endregion

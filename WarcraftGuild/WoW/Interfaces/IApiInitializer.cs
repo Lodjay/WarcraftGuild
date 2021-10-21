@@ -6,7 +6,11 @@ namespace WarcraftGuild.WoW.Interfaces
 {
     public interface IApiInitializer
     {
-        Task Init();
+        Task InitAll();
+        Task InitAchievements();
+        Task InitRealms();
+        Task InitCharacterDatas();
+        Task InitApiDatas();
 
         Task InitGuild(string realmSlug, string guildSlug);
     }

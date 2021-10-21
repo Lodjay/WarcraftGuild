@@ -22,7 +22,7 @@ namespace WarcraftGuild.Core.Enums
         [EnumCode("pt_BR")]
         BrazilianPortuguese,
 
-        [EnumCode("de_de")]
+        [EnumCode("de_DE")]
         German,
 
         [EnumCode("es_ES")]

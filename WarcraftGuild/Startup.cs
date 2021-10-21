@@ -15,6 +15,8 @@ using Serilog;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Reflection;
+using WarcraftGuild.WoWHeadApi.Configuration;
+using WarcraftGuild.WoWHeadApi;
 
 namespace WarcraftGuild
 {
@@ -52,9 +54,11 @@ namespace WarcraftGuild
             });
             services.AddControllers();
             services.Configure<BlizzardApiConfiguration>(config => Configuration.GetSection("BlizzardApi").Bind(config));
+            services.Configure<WoWHeadApiConfiguration>(config => Configuration.GetSection("WoWHeadApi").Bind(config));
             services.Configure<ApiConfiguration>(config => Configuration.GetSection("ApiConfiguration").Bind(config));
             services.AddHttpClient();
             services.AddSingleton<IBlizzardApiReader, BlizzardApiReader>();
+            services.AddSingleton<IWoWHeadApiReader, WoWHeadApiReader>();
             services.AddSingleton<IApiInitializer, ApiInitializer>();
             services.AddSingleton<IBlizzardApiHandler, BlizzardApiHandler>();
             services.AddSingleton<IWebClient, ApiWebClient>();
