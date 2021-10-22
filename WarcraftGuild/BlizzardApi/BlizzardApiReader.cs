@@ -23,8 +23,8 @@ namespace WarcraftGuild.BlizzardApi
 
         public BlizzardApiReader(IOptions<BlizzardApiConfiguration> apiConfiguration, IWebClient webClient)
         {
-            _webClient = webClient;
-            _config = apiConfiguration.Value;
+            _config = apiConfiguration?.Value ?? throw new ArgumentNullException(nameof(apiConfiguration));
+            _webClient = webClient ?? throw new ArgumentNullException(nameof(webClient));
         }
 
         public async Task<string> GetJsonAsync(string query, Namespace? ns = null, string additionalParams = null)
