@@ -1,46 +1,74 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Options;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using WarcraftGuild.BlizzardApi;
+using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Interfaces;
 using WarcraftGuild.Core.Enums;
 using WarcraftGuild.Core.Exceptions;
+using WarcraftGuild.Core.Extensions;
+using WarcraftGuildTests.Unit.BlizzardApi.Helpers;
 using Xunit;
 
 namespace WarcraftGuildTests.Unit.BlizzardApi
 {
     public class BlizzardApiReaderGetJsonTests : IClassFixture<BlizzardApiReaderTests>
     {
-        private BlizzardApiReaderTests _blizzardApiReaderTests;
-        private string AssertedJson { get; set; }
+        private BlizzardApiReaderTests BlizzardApiReaderTests { get; set; }
+        private string ExpectedJson { get; set; }
 
         public BlizzardApiReaderGetJsonTests(BlizzardApiReaderTests blizzardApiReaderTests)
         {
-            _blizzardApiReaderTests = blizzardApiReaderTests;
-            AssertedJson = "Test";
+            BlizzardApiReaderTests = blizzardApiReaderTests;
+            ExpectedJson = "Test";
         }
 
         [Fact]
-        public async void GetJson_Valid()
+        public async Task GetJson_Valid()
         {
-            Mock<IApiResponse> Response = new Mock<IApiResponse>();
-            Response.Setup(x => x.GetStatusCode()).Returns(HttpStatusCode.OK);
-            Response.Setup(x => x.ReadContentAsync()).ReturnsAsync(AssertedJson, _blizzardApiReaderTests.AsyncDelay);
-            _blizzardApiReaderTests.WebClient.Setup(x => x.MakeApiRequestAsync(It.IsAny<string>())).ReturnsAsync(Response.Object, _blizzardApiReaderTests.AsyncDelay);
+            WebClientMocker webClient = new WebClientMocker();
+            webClient.SetupAuth(true);
+            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, ExpectedJson);
+            BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
 
-            string jsonResult = await _blizzardApiReaderTests.BlizzardApiReader.GetJsonAsync("test", Namespace.Static).ConfigureAwait(false);
-            Assert.Equal(AssertedJson, jsonResult);
+            string jsonResult = await api.GetJsonAsync("test", Namespace.Static).ConfigureAwait(false);
+            Assert.Equal(ExpectedJson, jsonResult);
 
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task GetJson_ApiFailed()
+        public async Task GetJson_BreakLimit()
         {
-            Mock<IApiResponse> Response = new Mock<IApiResponse>();
-            Response.Setup(x => x.GetStatusCode()).Returns(HttpStatusCode.BadRequest);
-            Response.Setup(x => x.ReadContentAsync()).ReturnsAsync(AssertedJson);
-            _blizzardApiReaderTests.WebClient.Setup(x => x.MakeApiRequestAsync(It.IsAny<string>())).ReturnsAsync(Response.Object);
+            BlizzardApiConfiguration config = BlizzardApiReaderTests.DefaultConfig.Clone();
+            config.Limiter = new List<Limiter>
+            {
+                new Limiter{RatesPerTimespan = 10, TimeBetweenLimitReset = new TimeSpan(0,0,5)},
+            };
+            WebClientMocker webClient = new WebClientMocker();
+            webClient.SetupAuth(true);
+            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, ExpectedJson);
+            BlizzardApiReader api = new BlizzardApiReader(Options.Create(config), webClient.WebClient);
 
-            await Assert.ThrowsAsync<BadResponseException>(() => _blizzardApiReaderTests.BlizzardApiReader.GetJsonAsync("test", Namespace.Static)).ConfigureAwait(false);
+            List<Task> tasks = new List<Task>();
+            for (int i = 0; i < config.Limiter.First().RatesPerTimespan +1; i++)
+                tasks.Add(api.GetJsonAsync("test", Namespace.Static));
 
+            await Assert.ThrowsAsync<RateLimitReachedException>(() => Task.WhenAll(tasks)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task GetJson_ApiFailed()
+        {
+            WebClientMocker webClient = new WebClientMocker();
+            webClient.SetupAuth(true);
+            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.InternalServerError, ExpectedJson);
+            BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
+
+            await Assert.ThrowsAsync<BadResponseException>(() => api.GetJsonAsync("test", Namespace.Static)).ConfigureAwait(false);
         }
     }
 }
