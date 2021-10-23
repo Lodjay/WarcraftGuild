@@ -2,6 +2,7 @@
 using System;
 using System.Net;
 using WarcraftGuild.BlizzardApi.Interfaces;
+using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuildTests.Unit.BlizzardApi.Helpers
 {
@@ -28,7 +29,6 @@ namespace WarcraftGuildTests.Unit.BlizzardApi.Helpers
             else
             {
                 response.Setup(HttpStatusCode.Forbidden, "{\"AnyError\":\"Ooops\",\"token_type\":\"crash\",\"expires_in\":0,\"sub\":\"0\"}", time ?? AsyncDelay);
-
             }
             Mock.Setup(x => x.RequestAccessTokenAsync()).ReturnsAsync(response.Response, time ?? AsyncDelay);
         }
@@ -41,6 +41,19 @@ namespace WarcraftGuildTests.Unit.BlizzardApi.Helpers
                 Mock.Setup(x => x.MakeApiRequestAsync(It.IsAny<string>())).ReturnsAsync(response.Response, time ?? AsyncDelay);
             else
                 Mock.Setup(x => x.MakeApiRequestAsync(It.Is<string>(s => s == path))).ReturnsAsync(response.Response, time ?? AsyncDelay);
+        }
+
+        public void VerifyAuth(Times times)
+        {
+            Mock.Verify(x => x.RequestAccessTokenAsync(), times);
+        }
+
+        public void VerifyApiRequest(string path, Times times)
+        {
+            if (string.IsNullOrEmpty(path))
+                Mock.Verify(x => x.MakeApiRequestAsync(It.IsAny<string>()), times);
+            else
+                Mock.Verify(x => x.MakeApiRequestAsync(It.Is<string>(s => s == path)), times);
         }
     }
 }

@@ -7,9 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Feature\BlizzardApi\appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Feature\BlizzardApi\appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.11" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,11 +38,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="RNG\" />
+    <ProjectReference Include="..\WarcraftGuild\WarcraftGuild.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WarcraftGuild\WarcraftGuild.csproj" />
+    <Folder Include="Unit\BlizzardApi\BlizzardApiReader\GetWoWJsonTests\Common\" />
+    <Folder Include="Unit\BlizzardApi\BlizzardApiReader\GetWoWJsonTests\Guild\" />
+    <Folder Include="Unit\BlizzardApi\BlizzardApiReader\GetWoWJsonTests\Item\" />
+    <Folder Include="Unit\BlizzardApi\BlizzardApiReader\GetWoWJsonTests\Character\" />
+    <Folder Include="Unit\BlizzardApi\BlizzardApiReader\GetWoWJsonTests\Achievement\" />
   </ItemGroup>
 
 </Project>

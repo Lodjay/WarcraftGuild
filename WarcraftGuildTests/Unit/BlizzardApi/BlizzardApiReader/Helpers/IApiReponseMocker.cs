@@ -1,7 +1,9 @@
 ﻿using Moq;
 using System;
 using System.Net;
+using System.Text.Json;
 using WarcraftGuild.BlizzardApi.Interfaces;
+using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuildTests.Unit.BlizzardApi.Helpers
 {

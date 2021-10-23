@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Configuration;
@@ -16,33 +17,28 @@ using Xunit;
 
 namespace WarcraftGuildTests.Unit.BlizzardApi
 {
-    public class BlizzardApiReaderGetJsonTests : IClassFixture<BlizzardApiReaderTests>
+    public class BlizzardApiReaderCheckTests : IClassFixture<BlizzardApiReaderTests>
     {
         private BlizzardApiReaderTests BlizzardApiReaderTests { get; set; }
-        private string ExpectedJson { get; set; }
 
-        public BlizzardApiReaderGetJsonTests(BlizzardApiReaderTests blizzardApiReaderTests)
+        public BlizzardApiReaderCheckTests(BlizzardApiReaderTests blizzardApiReaderTests)
         {
             BlizzardApiReaderTests = blizzardApiReaderTests;
-            ExpectedJson = "Test";
         }
 
         [Fact]
-        public async Task GetJson_Valid()
+        public async Task Check_SuccessAuth()
         {
             WebClientMocker webClient = new WebClientMocker();
             webClient.SetupAuth(true);
-            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, ExpectedJson);
             BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
-
-            string jsonResult = await api.GetJsonAsync("test").ConfigureAwait(false);
-            Assert.Equal(ExpectedJson, jsonResult);
+            Exception ex = await Record.ExceptionAsync(() => api.Check()).ConfigureAwait(false);
+            Assert.Null(ex);
             webClient.VerifyAuth(Times.Once());
-            webClient.VerifyApiRequest(It.IsAny<string>(), Times.Once());
         }
 
         [Fact]
-        public async Task GetJson_BreakLimit()
+        public async Task Check_BrokenLimit()
         {
             BlizzardApiConfiguration config = BlizzardApiReaderTests.DefaultConfig.Clone();
             config.Limiter = new List<Limiter>
@@ -51,34 +47,29 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
             };
             WebClientMocker webClient = new WebClientMocker();
             webClient.SetupAuth(true);
-            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, ExpectedJson);
             BlizzardApiReader api = new BlizzardApiReader(Options.Create(config), webClient.WebClient);
 
             List<Exception> exceptions = new List<Exception>();
             int count = config.Limiter.First().RatesPerTimespan;
             for (int i = 0; i < count + 1; i++)
             {
-                Exception ex = await Record.ExceptionAsync(() => api.GetJsonAsync("test")).ConfigureAwait(false);
+                Exception ex = await Record.ExceptionAsync(() => api.Check()).ConfigureAwait(false);
                 if (ex != null)
                     exceptions.Add(ex);
             }
             Assert.Single(exceptions);
             Assert.IsType<RateLimitReachedException>(exceptions.First());
             webClient.VerifyAuth(Times.Once());
-            webClient.VerifyApiRequest(It.IsAny<string>(), Times.Exactly(count));
         }
 
         [Fact]
-        public async Task GetJson_ApiFailed()
+        public async Task Check_FailAuth()
         {
             WebClientMocker webClient = new WebClientMocker();
-            webClient.SetupAuth(true);
-            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.InternalServerError, ExpectedJson);
+            webClient.SetupAuth(false);
             BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
-
-            await Assert.ThrowsAsync<BadResponseException>(() => api.GetJsonAsync("test")).ConfigureAwait(false);
+            await Assert.ThrowsAsync<HttpRequestException>(() => api.Check());
             webClient.VerifyAuth(Times.Once());
-            webClient.VerifyApiRequest(It.IsAny<string>(), Times.Once());
         }
     }
 }

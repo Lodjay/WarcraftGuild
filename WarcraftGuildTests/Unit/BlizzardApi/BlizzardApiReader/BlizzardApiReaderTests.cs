@@ -19,10 +19,8 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
     public class BlizzardApiReaderTests : IDisposable
     {
         public BlizzardApiConfiguration DefaultConfig { get; private set; }
-        public WebClientMocker DefaultWebClientMocker { get; private set; }
         public TimeSpan DefaultAsyncDelay { get; private set; }
         public IOptions<BlizzardApiConfiguration> DefaultConfiguration { get { return Options.Create(DefaultConfig); } }
-        public IWebClient DefaultWebClient { get { return DefaultWebClientMocker.WebClient; } }
 
         public BlizzardApiReaderTests()
         {
@@ -38,8 +36,6 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
                     new Limiter{RatesPerTimespan = 100, TimeBetweenLimitReset = new TimeSpan(0,0,1)},
                 }
             };
-            DefaultWebClientMocker = new WebClientMocker();
-            DefaultWebClientMocker.SetupAuth(true);
             DefaultAsyncDelay = new TimeSpan(500);
         }
 
@@ -52,35 +48,9 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         [Fact]
         public void Ctor_ShouldThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new BlizzardApiReader(null, DefaultWebClient));
+            WebClientMocker webClient = new WebClientMocker();
+            Assert.Throws<ArgumentNullException>(() => new BlizzardApiReader(null, webClient.WebClient));
             Assert.Throws<ArgumentNullException>(() => new BlizzardApiReader(DefaultConfiguration, null));
-        }
-
-        [Fact]
-        public async Task Check_SuccessAuth()
-        {
-            BlizzardApiReader api = new BlizzardApiReader(DefaultConfiguration, DefaultWebClient);
-            Exception ex = await Record.ExceptionAsync(() => api.Check()).ConfigureAwait(false);
-            Assert.Null(ex);
-        }
-
-        [Fact]
-        public async Task Checkdouble_SuccessAuth()
-        {
-            BlizzardApiReader api = new BlizzardApiReader(DefaultConfiguration, DefaultWebClient);
-            Exception ex = await Record.ExceptionAsync(() => api.Check()).ConfigureAwait(false);
-            Assert.Null(ex);
-            ex = await Record.ExceptionAsync(() => api.Check()).ConfigureAwait(false);
-            Assert.Null(ex);
-        }
-
-        [Fact]
-        public async Task Check_FailAuth()
-        {
-            WebClientMocker webClient = DefaultWebClientMocker;
-            webClient.SetupAuth(false);
-            BlizzardApiReader api = new BlizzardApiReader(DefaultConfiguration, webClient.WebClient);
-            await Assert.ThrowsAsync<HttpRequestException>(() => api.Check());
         }
 
     }

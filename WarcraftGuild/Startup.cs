@@ -31,8 +31,8 @@ namespace WarcraftGuild
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{hostEnv.EnvironmentName}.json", optional: true, reloadOnChange: true);
             builder.AddEnvironmentVariables();
-
             Configuration = builder.Build();
+
             string fileName = "logs.log";
             string rootPath = Path.GetPathRoot(Assembly.GetEntryAssembly().Location);
             string DbName = Configuration.GetSection("ApiConfiguration").GetSection("DataBaseName").Value;
@@ -58,10 +58,10 @@ namespace WarcraftGuild
             services.Configure<ApiConfiguration>(config => Configuration.GetSection("ApiConfiguration").Bind(config));
             services.AddHttpClient();
             services.AddSingleton<IBlizzardApiReader, BlizzardApiReader>();
+            services.AddSingleton<IWebClient, ApiWebClient>();
             services.AddSingleton<IWoWHeadApiReader, WoWHeadApiReader>();
             services.AddSingleton<IApiInitializer, ApiInitializer>();
             services.AddSingleton<IBlizzardApiHandler, BlizzardApiHandler>();
-            services.AddSingleton<IWebClient, ApiWebClient>();
             services.AddSingleton<IDbManager, DbManager>();
             services.AddSwaggerGen(c =>
             {

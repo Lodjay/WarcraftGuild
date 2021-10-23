@@ -4,27 +4,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
 using WarcraftGuild.BlizzardApi.Configuration;
-using WarcraftGuild.BlizzardApi.Interfaces;
+using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
 using WarcraftGuild.Core.Exceptions;
 using WarcraftGuild.Core.Extensions;
+using WarcraftGuildTests.DataGenerator.WoWJson;
 using WarcraftGuildTests.Unit.BlizzardApi.Helpers;
 using Xunit;
 
 namespace WarcraftGuildTests.Unit.BlizzardApi
 {
-    public class BlizzardApiReaderGetJsonTests : IClassFixture<BlizzardApiReaderTests>
+    public class BlizzardApiReaderGetRealmTests : IClassFixture<BlizzardApiReaderTests>
     {
         private BlizzardApiReaderTests BlizzardApiReaderTests { get; set; }
-        private string ExpectedJson { get; set; }
+        private RealmJson ExpectedJson { get; set; }
 
-        public BlizzardApiReaderGetJsonTests(BlizzardApiReaderTests blizzardApiReaderTests)
+        public BlizzardApiReaderGetRealmTests(BlizzardApiReaderTests blizzardApiReaderTests)
         {
             BlizzardApiReaderTests = blizzardApiReaderTests;
-            ExpectedJson = "Test";
+            ExpectedJson = WoWJsonGenerator.RandomRealmJson();
         }
 
         [Fact]
@@ -32,11 +34,11 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         {
             WebClientMocker webClient = new WebClientMocker();
             webClient.SetupAuth(true);
-            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, ExpectedJson);
+            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, JsonSerializer.Serialize(ExpectedJson));
             BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
 
-            string jsonResult = await api.GetJsonAsync("test").ConfigureAwait(false);
-            Assert.Equal(ExpectedJson, jsonResult);
+            RealmJson jsonResult = await api.GetAsync<RealmJson>("test", Namespace.Static).ConfigureAwait(false);
+            Assert.True(ExpectedJson.IsClone(jsonResult));
             webClient.VerifyAuth(Times.Once());
             webClient.VerifyApiRequest(It.IsAny<string>(), Times.Once());
         }
@@ -51,14 +53,14 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
             };
             WebClientMocker webClient = new WebClientMocker();
             webClient.SetupAuth(true);
-            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, ExpectedJson);
+            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, JsonSerializer.Serialize(ExpectedJson));
             BlizzardApiReader api = new BlizzardApiReader(Options.Create(config), webClient.WebClient);
 
             List<Exception> exceptions = new List<Exception>();
             int count = config.Limiter.First().RatesPerTimespan;
             for (int i = 0; i < count + 1; i++)
             {
-                Exception ex = await Record.ExceptionAsync(() => api.GetJsonAsync("test")).ConfigureAwait(false);
+                Exception ex = await Record.ExceptionAsync(() => api.GetAsync<RealmJson>("test", Namespace.Static)).ConfigureAwait(false);
                 if (ex != null)
                     exceptions.Add(ex);
             }
@@ -73,10 +75,10 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         {
             WebClientMocker webClient = new WebClientMocker();
             webClient.SetupAuth(true);
-            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.InternalServerError, ExpectedJson);
+            webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.InternalServerError, JsonSerializer.Serialize(ExpectedJson));
             BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
 
-            await Assert.ThrowsAsync<BadResponseException>(() => api.GetJsonAsync("test")).ConfigureAwait(false);
+            await Assert.ThrowsAsync<BadResponseException>(() => api.GetAsync<RealmJson>("test", Namespace.Static)).ConfigureAwait(false);
             webClient.VerifyAuth(Times.Once());
             webClient.VerifyApiRequest(It.IsAny<string>(), Times.Once());
         }
