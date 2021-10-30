@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.BlizzardApi.Configuration
 {
@@ -27,7 +23,6 @@ namespace WarcraftGuild.BlizzardApi.Configuration
 
             currentRateCounter = 0;
             CalculateAndSetNextReset();
-
         }
 
         public bool IsAtRateLimit()

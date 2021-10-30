@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi.Interfaces;
 
 namespace WarcraftGuild.Core.Exceptions
@@ -30,5 +27,4 @@ namespace WarcraftGuild.Core.Exceptions
             StatusCode = HttpStatusCode.InternalServerError;
         }
     }
-
 }

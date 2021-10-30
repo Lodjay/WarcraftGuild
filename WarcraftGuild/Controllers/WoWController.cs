@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.Core.Enums;
-using WarcraftGuild.WoW.Handlers;
+using WarcraftGuild.Core.Helpers;
 using WarcraftGuild.WoW.Interfaces;
 using WarcraftGuild.WoW.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WarcraftGuild.Controllers
 {
@@ -19,22 +13,24 @@ namespace WarcraftGuild.Controllers
     [ApiController]
     public class WoWController : ControllerBase
     {
-        private readonly IWoWHandler _WoWHandler;
+        private readonly IBlizzardApiHandler _blizzardApiHandler;
         private readonly ILogger<WoWController> _logger;
 
-        public WoWController(IWoWHandler WoWHandler, ILogger<WoWController> logger)
+        public WoWController(IBlizzardApiHandler blizzardApiHandler, ILogger<WoWController> logger)
         {
-            _WoWHandler = WoWHandler ?? throw new ArgumentNullException(nameof(WoWHandler));
+            _blizzardApiHandler = blizzardApiHandler ?? throw new ArgumentNullException(nameof(blizzardApiHandler));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [Route("guild/{nameSlug}/{realmSlug}")]
+        [Route("guild/{guildName}/{realmName}")]
         [HttpGet]
-        public async Task<IActionResult> GetGuild([FromRoute] string nameSlug, [FromRoute] string realmSlug)
+        public async Task<IActionResult> GetGuild([FromRoute] string guildName, [FromRoute] string realmName)
         {
             try
             {
-                Guild guild = await _WoWHandler.GetGuild(realmSlug, nameSlug, true).ConfigureAwait(false);
+                _logger.LogTrace("Call GetGuild");
+                Guild guild = await _blizzardApiHandler.GetGuildBySlug(realmName.Slugify(), guildName.Slugify()).ConfigureAwait(false);
+                
                 return new JsonResult(guild) { StatusCode = (int)HttpStatusCode.OK };
             }
             catch (Exception ex) when (ex != null)
