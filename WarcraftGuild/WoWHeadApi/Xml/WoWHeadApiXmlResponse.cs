@@ -23,7 +23,7 @@ namespace WarcraftGuild.WoWHeadApi.Xml
             {
                 if (IsValid)
                     return string.Empty;
-                StringBuilder builder = new StringBuilder();
+                StringBuilder builder = new();
                 foreach (XElement element in Xml.Root.Elements().Select(x => x.Element("error")))
                     builder.AppendLine(element.Value);
                 return builder.ToString();

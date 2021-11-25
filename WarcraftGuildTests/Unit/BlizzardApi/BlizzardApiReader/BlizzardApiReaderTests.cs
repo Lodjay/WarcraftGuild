@@ -42,13 +42,13 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize(this);
         }
 
         [Fact]
         public void Ctor_ShouldThrowsArgumentNullException()
         {
-            WebClientMocker webClient = new WebClientMocker();
+            WebClientMocker webClient = new();
             Assert.Throws<ArgumentNullException>(() => new BlizzardApiReader(null, webClient.WebClient));
             Assert.Throws<ArgumentNullException>(() => new BlizzardApiReader(DefaultConfiguration, null));
         }

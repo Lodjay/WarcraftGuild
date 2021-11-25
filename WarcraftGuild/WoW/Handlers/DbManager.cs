@@ -22,12 +22,12 @@ namespace WarcraftGuild.WoW.Handlers
         public DbManager(IOptions<ApiConfiguration> apiConfiguration)
         {
             _config = apiConfiguration.Value ?? throw new ArgumentNullException(nameof(apiConfiguration));
-            MongoClientSettings settings = new MongoClientSettings
+            MongoClientSettings settings = new()
             {
                 MinConnectionPoolSize = 100,
                 MaxConnectionPoolSize = 500
             };
-            MongoClient client = new MongoClient(settings);
+            MongoClient client = new(settings);
             _db = client.GetDatabase(_config.DataBaseName);
         }
 
@@ -71,7 +71,6 @@ namespace WarcraftGuild.WoW.Handlers
         {
             var collection = _db.GetCollection<T>(typeof(T).Name);
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("Id", id);
-            var result = await collection.FindAsync(filter).ConfigureAwait(false);
             await collection.DeleteOneAsync(filter);
         }
 
@@ -95,7 +94,7 @@ namespace WarcraftGuild.WoW.Handlers
         public async Task DropAll()
         {
             var collections = await _db.ListCollectionNamesAsync().ConfigureAwait(false);
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             foreach (string collection in collections.ToList())
                 tasks.Add(Drop(collection));
             await Task.WhenAll(tasks);

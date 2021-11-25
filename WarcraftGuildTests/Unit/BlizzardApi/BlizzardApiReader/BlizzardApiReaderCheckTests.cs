@@ -29,9 +29,9 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         [Fact]
         public async Task Check_SuccessAuth()
         {
-            WebClientMocker webClient = new WebClientMocker();
+            WebClientMocker webClient = new();
             webClient.SetupAuth(true);
-            BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
+            BlizzardApiReader api = new(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
             Exception ex = await Record.ExceptionAsync(() => api.Check()).ConfigureAwait(false);
             Assert.Null(ex);
             webClient.VerifyAuth(Times.Once());
@@ -45,11 +45,11 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
             {
                 new Limiter{RatesPerTimespan = 10, TimeBetweenLimitReset = new TimeSpan(0,0,5)},
             };
-            WebClientMocker webClient = new WebClientMocker();
+            WebClientMocker webClient = new();
             webClient.SetupAuth(true);
-            BlizzardApiReader api = new BlizzardApiReader(Options.Create(config), webClient.WebClient);
+            BlizzardApiReader api = new(Options.Create(config), webClient.WebClient);
 
-            List<Exception> exceptions = new List<Exception>();
+            List<Exception> exceptions = new();
             int count = config.Limiter.First().RatesPerTimespan;
             for (int i = 0; i < count + 1; i++)
             {
@@ -65,9 +65,9 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         [Fact]
         public async Task Check_FailAuth()
         {
-            WebClientMocker webClient = new WebClientMocker();
+            WebClientMocker webClient = new();
             webClient.SetupAuth(false);
-            BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
+            BlizzardApiReader api = new(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
             await Assert.ThrowsAsync<HttpRequestException>(() => api.Check());
             webClient.VerifyAuth(Times.Once());
         }

@@ -30,7 +30,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitAll()
         {
-            List<Task> InitTasks = new List<Task>
+            List<Task> InitTasks = new()
             {
                 InitRealms(),
                 InitAchievements(),
@@ -43,12 +43,12 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitApiDatas()
         {
-            List<Task> DropTasks = new List<Task>
+            List<Task> DropTasks = new()
             {
                 _dbManager.Drop("LocaleString"),
             };
             await Task.WhenAll(DropTasks).ConfigureAwait(false);
-            List<Task> InitTasks = new List<Task>
+            List<Task> InitTasks = new()
             {
                 InitLocaleString(),
             };
@@ -57,13 +57,13 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitAchievements()
         {
-            List<Task> DropTasks = new List<Task>
+            List<Task> DropTasks = new()
             {
                 _dbManager.Drop<Achievement>(),
                 _dbManager.Drop<AchievementCategory>()
             };
             await Task.WhenAll(DropTasks).ConfigureAwait(false);
-            List<Task> InitTasks = new List<Task>
+            List<Task> InitTasks = new()
             {
                 FillAchievements(),
                 FillAchievementCategories()
@@ -73,13 +73,13 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitRealms()
         {
-            List<Task> DropTasks = new List<Task>
+            List<Task> DropTasks = new()
             {
                 _dbManager.Drop<Realm>(),
                 _dbManager.Drop<ConnectedRealm>()
             };
             await Task.WhenAll(DropTasks).ConfigureAwait(false);
-            List<Task> InitTasks = new List<Task>
+            List<Task> InitTasks = new()
             {
                 FillRealms(),
                 FillConnectedRealms(),
@@ -89,14 +89,14 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitCharacterDatas()
         {
-            List<Task> DropTasks = new List<Task>
+            List<Task> DropTasks = new()
             {
                 _dbManager.Drop<Race>(),
                 _dbManager.Drop<Class>(),
                 _dbManager.Drop<Specialization>(),
             };
             await Task.WhenAll(DropTasks).ConfigureAwait(false);
-            List<Task> InitTasks = new List<Task>
+            List<Task> InitTasks = new()
             {
                 FillRaces(),
                 FillClasses(),
@@ -106,13 +106,13 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitGuild(string realmSlug, string guildSlug)
         {
-            List<Task> DropTasks = new List<Task>
+            List<Task> DropTasks = new()
             {
                 _dbManager.Drop<Guild>(),
                 _dbManager.Drop<Character>()
             };
             await Task.WhenAll(DropTasks).ConfigureAwait(false);
-            Guild guild = new Guild
+            Guild guild = new()
             {
                 Slug = guildSlug,
                 RealmSlug = realmSlug
@@ -134,7 +134,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillConnectedRealms()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             ConnectedRealmIndexJson index = await _blizzardApiReader.GetAsync<ConnectedRealmIndexJson>("data/wow/connected-realm/index", Namespace.Dynamic).ConfigureAwait(false);
             foreach (HrefJson href in index.ConnectedRealms)
                 tasks.Add(FillConnectedRealm(href.Uri.LocalPath));
@@ -153,7 +153,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillRealms()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             RealmIndexJson index = await _blizzardApiReader.GetAsync<RealmIndexJson>("data/wow/realm/index", Namespace.Dynamic).ConfigureAwait(false);
             foreach (RealmJson realm in index.Realms)
                 tasks.Add(FillRealm(realm.Slug));
@@ -172,7 +172,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillAchievements()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             AchievementIndexJson index = await _blizzardApiReader.GetAsync<AchievementIndexJson>("data/wow/achievement/index", Namespace.Static).ConfigureAwait(false);
             foreach (AchievementJson achievement in index.Achievements)
                 tasks.Add(FillAchievement(achievement));
@@ -208,7 +208,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillAchievementCategories()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             AchievementCategoryIndexJson index = await _blizzardApiReader.GetAsync<AchievementCategoryIndexJson>("data/wow/achievement-category/index", Namespace.Static).ConfigureAwait(false);
             foreach (AchievementCategoryJson categoryJson in index.Categories)
                 tasks.Add(FillAchievementCategory(categoryJson));
@@ -240,7 +240,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillRaces()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             RaceIndexJson index = await _blizzardApiReader.GetAsync<RaceIndexJson>("data/wow/playable-race/index", Namespace.Static).ConfigureAwait(false);
             foreach (RaceJson race in index.Races)
                 tasks.Add(FillRace(race));
@@ -272,7 +272,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillClasses()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             ClassIndexJson index = await _blizzardApiReader.GetAsync<ClassIndexJson>("data/wow/playable-class/index", Namespace.Static).ConfigureAwait(false);
             foreach (ClassJson classJson in index.Classes)
                 tasks.Add(FillClass(classJson));
@@ -299,7 +299,7 @@ namespace WarcraftGuild.WoW.Handlers
             {
                 result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-class/{classJson.Id}", Namespace.Static).ConfigureAwait(false);
 
-                List<Task> subTasks = new List<Task>();
+                List<Task> subTasks = new();
                 foreach (SpecializationJson specializationJson in result.Specializations)
                     subTasks.Add(FillSpecialization(specializationJson));
                 await Task.WhenAll(subTasks).ConfigureAwait(false);
@@ -336,12 +336,12 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillRoster(GuildRosterJson guildRosterJson)
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             foreach (GuildMemberJson memberJson in guildRosterJson.Members)
             {
                 if (memberJson.Member != null && memberJson.Member.Realm != null)
                 {
-                    CharacterJson characterJson = new CharacterJson
+                    CharacterJson characterJson = new()
                     {
                         Id = memberJson.Member.Id,
                         Name = memberJson.Member.Name,
@@ -410,7 +410,7 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitLocaleString()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             foreach (LocaleString locale in LocaleStringInitializer.Generate())
                 tasks.Add(_dbManager.Insert(locale));
             await Task.WhenAll(tasks).ConfigureAwait(false);

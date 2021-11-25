@@ -21,7 +21,7 @@ namespace WarcraftGuildTests.Unit.BlizzardApi.Helpers
 
         public void SetupAuth(bool valid, TimeSpan? time = null)
         {
-            IApiReponseMocker response = new IApiReponseMocker();
+            IApiReponseMocker response = new();
             if (valid)
             {
                 response.Setup(HttpStatusCode.OK, "{\"access_token\":\"EUDMYmwlmK3JM6ZKf54hHhNSRxd0IMxFNL\",\"token_type\":\"bearer\",\"expires_in\":86399,\"sub\":\"7cface7352224419a5678ba897d81af1\"}", time ?? AsyncDelay);
@@ -35,7 +35,7 @@ namespace WarcraftGuildTests.Unit.BlizzardApi.Helpers
 
         public void SetupApiRequest(string path, HttpStatusCode code, string expectedJson, TimeSpan? time = null)
         {
-            IApiReponseMocker response = new IApiReponseMocker();
+            IApiReponseMocker response = new();
             response.Setup(code, expectedJson, time);
             if (string.IsNullOrEmpty(path))
                 Mock.Setup(x => x.MakeApiRequestAsync(It.IsAny<string>())).ReturnsAsync(response.Response, time ?? AsyncDelay);

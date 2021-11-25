@@ -23,7 +23,7 @@ namespace WarcraftGuild.WoWHeadApi
         public TXml GetXmlAsync<TXml>(string query, string additionalParams = null) where TXml : WoWHeadApiXmlResponse, new()
         {
             string urlRequest = ParsePath(query, additionalParams);
-            TXml result = new TXml
+            TXml result = new()
             {
                 Xml = XDocument.Load(new Uri(_config.GetApiUrl(), $"{urlRequest}&xml").ToString())
             };

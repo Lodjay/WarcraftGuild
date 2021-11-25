@@ -30,7 +30,7 @@ namespace WarcraftGuildTests.DataGenerator
 
         public static string RandomString(char[] chars, int minLength, int maxLength)
         {
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new();
             int length = ((int)GenerateUlong % (maxLength - minLength)) + minLength;
             for (int i = 0; i < length; i++)
             {
