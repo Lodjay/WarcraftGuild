@@ -8,7 +8,7 @@ namespace WarcraftGuild.Core.Helpers
     {
         public static List<LocaleString> Generate()
         {
-            List<LocaleString> locales = new List<LocaleString>
+            List<LocaleString> locales = new()
             {
                 BAJsonEmpty(), BANotFound(), BAForbidden(), BALimit(), UnknownError()
             };

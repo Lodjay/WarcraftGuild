@@ -32,10 +32,10 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         [Fact]
         public async Task GetJson_Valid()
         {
-            WebClientMocker webClient = new WebClientMocker();
+            WebClientMocker webClient = new();
             webClient.SetupAuth(true);
             webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, JsonSerializer.Serialize(ExpectedJson));
-            BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
+            BlizzardApiReader api = new(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
 
             RealmJson jsonResult = await api.GetAsync<RealmJson>("test", Namespace.Static).ConfigureAwait(false);
             Assert.True(ExpectedJson.IsClone(jsonResult));
@@ -51,12 +51,12 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
             {
                 new Limiter{RatesPerTimespan = 10, TimeBetweenLimitReset = new TimeSpan(0,0,5)},
             };
-            WebClientMocker webClient = new WebClientMocker();
+            WebClientMocker webClient = new();
             webClient.SetupAuth(true);
             webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.OK, JsonSerializer.Serialize(ExpectedJson));
-            BlizzardApiReader api = new BlizzardApiReader(Options.Create(config), webClient.WebClient);
+            BlizzardApiReader api = new(Options.Create(config), webClient.WebClient);
 
-            List<Exception> exceptions = new List<Exception>();
+            List<Exception> exceptions = new();
             int count = config.Limiter.First().RatesPerTimespan;
             for (int i = 0; i < count + 1; i++)
             {
@@ -73,10 +73,10 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         [Fact]
         public async Task GetJson_ApiFailed()
         {
-            WebClientMocker webClient = new WebClientMocker();
+            WebClientMocker webClient = new();
             webClient.SetupAuth(true);
             webClient.SetupApiRequest(It.IsAny<string>(), HttpStatusCode.InternalServerError, JsonSerializer.Serialize(ExpectedJson));
-            BlizzardApiReader api = new BlizzardApiReader(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
+            BlizzardApiReader api = new(BlizzardApiReaderTests.DefaultConfiguration, webClient.WebClient);
 
             await Assert.ThrowsAsync<BadResponseException>(() => api.GetAsync<RealmJson>("test", Namespace.Static)).ConfigureAwait(false);
             webClient.VerifyAuth(Times.Once());

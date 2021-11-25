@@ -16,7 +16,7 @@ namespace WarcraftGuild.Core.Helpers
 
         public static string RemoveAccent(this string str)
         {
-            StringBuilder sbReturn = new StringBuilder();
+            StringBuilder sbReturn = new();
             var arrayText = str.Normalize(NormalizationForm.FormD).ToCharArray();
             foreach (char letter in arrayText)
             {
@@ -38,7 +38,7 @@ namespace WarcraftGuild.Core.Helpers
 
         private static string CutAndTrim(this string str)
         {
-            return str.Substring(0, str.Length <= 45 ? str.Length : 45).Trim();
+            return str[..(str.Length <= 45 ? str.Length : 45)].Trim();
         }
 
         private static string SetHyphens(this string str)

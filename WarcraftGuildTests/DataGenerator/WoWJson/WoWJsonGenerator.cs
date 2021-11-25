@@ -15,7 +15,7 @@ namespace WarcraftGuildTests.DataGenerator.WoWJson
     {
         public static List<BlizzardApiJsonResponse> GenerateAllWoWJson()
         {
-            List<BlizzardApiJsonResponse> WoWJsonList = new List<BlizzardApiJsonResponse>();
+            List<BlizzardApiJsonResponse> WoWJsonList = new();
             WoWJsonList.AddRange(GenerateRealmJsons());
             return WoWJsonList;
         }
@@ -62,7 +62,7 @@ namespace WarcraftGuildTests.DataGenerator.WoWJson
 
         public static List<HrefJson> RandomHrefJsonList()
         {
-            List<HrefJson> hrefJsonList = new List<HrefJson>();
+            List<HrefJson> hrefJsonList = new();
             for (int i = 0; i < RandomDataGenerator.RandomUint(10); i++)
                 hrefJsonList.Add(RandomHrefJson());
             return hrefJsonList;
@@ -74,7 +74,7 @@ namespace WarcraftGuildTests.DataGenerator.WoWJson
 
         public static List<RealmJson> RandomRealmJsonList()
         {
-            List<RealmJson> realms = new List<RealmJson>();
+            List<RealmJson> realms = new();
             for (int i = 0; i < RandomDataGenerator.RandomUint(10); i++)
                 realms.Add(RandomRealmJson());
             return realms;
