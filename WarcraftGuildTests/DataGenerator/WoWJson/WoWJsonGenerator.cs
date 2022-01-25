@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi.Json;
-using WarcraftGuild.Core.Enums;
-using WarcraftGuild.Core.Extensions;
-using WarcraftGuild.Core.Helpers;
+using WarcraftGuild.Domain.Core.Enums;
+using WarcraftGuild.Domain.Core.Extensions;
+using WarcraftGuild.Domain.Core.Json;
 
-namespace WarcraftGuildTests.DataGenerator.WoWJson
+namespace WarcraftGuild.Tests.DataGenerator.WoWJson
 {
     public static class WoWJsonGenerator
     {
@@ -33,6 +29,7 @@ namespace WarcraftGuildTests.DataGenerator.WoWJson
         }
 
         #region Common
+
         public static TypeJson RandomTypeJson(string forceType)
         {
             return new TypeJson
@@ -68,7 +65,7 @@ namespace WarcraftGuildTests.DataGenerator.WoWJson
             return hrefJsonList;
         }
 
-        #endregion
+        #endregion Common
 
         #region Realm
 
@@ -151,6 +148,6 @@ namespace WarcraftGuildTests.DataGenerator.WoWJson
             return RandomConnectedRealmIndexJson(RandomHrefJsonList());
         }
 
-        #endregion
+        #endregion Realm
     }
 }

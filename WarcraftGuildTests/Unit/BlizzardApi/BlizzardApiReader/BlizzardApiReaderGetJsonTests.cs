@@ -5,16 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.BlizzardApi.Configuration;
-using WarcraftGuild.BlizzardApi.Interfaces;
-using WarcraftGuild.Core.Enums;
-using WarcraftGuild.Core.Exceptions;
-using WarcraftGuild.Core.Extensions;
-using WarcraftGuildTests.Unit.BlizzardApi.Helpers;
+using WarcraftGuild.Domain.Core.Exceptions;
+using WarcraftGuild.Domain.Core.Extensions;
+using WarcraftGuild.Infrastructure.BlizzardApi;
+using WarcraftGuild.Infrastructure.BlizzardApi.Configuration;
+using WarcraftGuild.Tests.Unit.BlizzardApi.Helpers;
 using Xunit;
 
-namespace WarcraftGuildTests.Unit.BlizzardApi
+namespace WarcraftGuild.Tests.Unit.BlizzardApi
 {
     public class BlizzardApiReaderGetJsonTests : IClassFixture<BlizzardApiReaderTests>
     {

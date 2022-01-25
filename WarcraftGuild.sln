@@ -1,11 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31825.309
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarcraftGuild", "WarcraftGuild\WarcraftGuild.csproj", "{01DB7CE8-58D7-4721-8535-8FA8B14FBC03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarcraftGuild.Application", "WarcraftGuild\WarcraftGuild.Application.csproj", "{01DB7CE8-58D7-4721-8535-8FA8B14FBC03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarcraftGuildTests", "WarcraftGuildTests\WarcraftGuildTests.csproj", "{F6ACA183-7DA1-497F-BA67-3E1D78E1C6A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarcraftGuild.Tests", "WarcraftGuildTests\WarcraftGuild.Tests.csproj", "{F6ACA183-7DA1-497F-BA67-3E1D78E1C6A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarcraftGuild.Domain", "WarcraftGuild.Domain\WarcraftGuild.Domain.csproj", "{DC99617F-E064-4640-80B9-8E7C09624070}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarcraftGuild.Infrastructure", "WarcraftGuild.Infrastructure\WarcraftGuild.Infrastructure.csproj", "{4C418690-07AD-4D8A-95CE-DCEFAB210C71}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9CC7726F-9E10-44A0-9099-0692B329F952}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +30,14 @@ Global
 		{F6ACA183-7DA1-497F-BA67-3E1D78E1C6A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6ACA183-7DA1-497F-BA67-3E1D78E1C6A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6ACA183-7DA1-497F-BA67-3E1D78E1C6A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC99617F-E064-4640-80B9-8E7C09624070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC99617F-E064-4640-80B9-8E7C09624070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC99617F-E064-4640-80B9-8E7C09624070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC99617F-E064-4640-80B9-8E7C09624070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C418690-07AD-4D8A-95CE-DCEFAB210C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C418690-07AD-4D8A-95CE-DCEFAB210C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C418690-07AD-4D8A-95CE-DCEFAB210C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C418690-07AD-4D8A-95CE-DCEFAB210C71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

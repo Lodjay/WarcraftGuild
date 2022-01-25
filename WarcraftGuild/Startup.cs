@@ -3,22 +3,22 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using System.Text.Json.Serialization;
-using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.BlizzardApi.Configuration;
-using WarcraftGuild.BlizzardApi.Interfaces;
-using WarcraftGuild.WoW.Configuration;
-using WarcraftGuild.WoW.Handlers;
-using WarcraftGuild.WoW.Interfaces;
-using Serilog;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Serilog;
 using System.IO;
 using System.Reflection;
-using WarcraftGuild.WoWHeadApi.Configuration;
-using WarcraftGuild.WoWHeadApi;
+using System.Text.Json.Serialization;
+using WarcraftGuild.Domain.Interfaces;
+using WarcraftGuild.Domain.Interfaces.Infrastructure;
+using WarcraftGuild.Domain.WoW.Configuration;
+using WarcraftGuild.Domain.WoW.Handlers;
+using WarcraftGuild.Infrastructure.BlizzardApi;
+using WarcraftGuild.Infrastructure.BlizzardApi.Configuration;
+using WarcraftGuild.Infrastructure.WoWHeadApi;
+using WarcraftGuild.Infrastructure.WoWHeadApi.Configuration;
 
-namespace WarcraftGuild
+namespace WarcraftGuild.Application
 {
     public class Startup
     {
@@ -43,7 +43,6 @@ namespace WarcraftGuild
                 .WriteTo.File(filePath)
                 //.WriteTo.MongoDB($"mongodb://localhost:27017/{DbName}", "Logs")
                 .CreateLogger();
-
         }
 
         public void ConfigureServices(IServiceCollection services)

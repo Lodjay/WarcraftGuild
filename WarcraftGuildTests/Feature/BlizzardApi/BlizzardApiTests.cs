@@ -1,28 +1,20 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Extensions.DependencyInjection;
-using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.BlizzardApi.Configuration;
-using WarcraftGuild.BlizzardApi.Interfaces;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore;
-using System.Threading.Tasks;
-using Xunit;
-using Autofac;
-using System.IO;
-using Microsoft.Extensions.Options;
-using WarcraftGuild.BlizzardApi.Json;
-using WarcraftGuild.Core.Enums;
-using System.Net.Http;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System.IO;
 using System.Net;
+using System.Threading.Tasks;
+using WarcraftGuild.Domain.Core.Enums;
+using WarcraftGuild.Domain.Core.Json;
+using WarcraftGuild.Domain.Interfaces;
+using WarcraftGuild.Domain.Interfaces.Infrastructure;
+using WarcraftGuild.Infrastructure.BlizzardApi;
+using WarcraftGuild.Infrastructure.BlizzardApi.Configuration;
+using Xunit;
 
-namespace WarcraftGuildTests.Feature.BlizzardApi
+namespace WarcraftGuild.Tests.Feature.BlizzardApi
 {
     public class BlizzardApiTests
     {
@@ -112,7 +104,7 @@ namespace WarcraftGuildTests.Feature.BlizzardApi
         {
             uint id = 7380;
             string query = $"data/wow/achievement/{id}";
-            AchievementJson result = await Api.GetAsync<AchievementJson>(query, Namespace.Static).ConfigureAwait(false); 
+            AchievementJson result = await Api.GetAsync<AchievementJson>(query, Namespace.Static).ConfigureAwait(false);
             MediaJson media = await Api.GetAsync<MediaJson>($"data/wow/media/achievement/{id}", Namespace.Static).ConfigureAwait(false);
             Assert.Equal(HttpStatusCode.OK, result.ResultCode);
             Assert.True(result.DirectlyCalled);

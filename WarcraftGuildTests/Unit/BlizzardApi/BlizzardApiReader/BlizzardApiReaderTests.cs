@@ -1,26 +1,20 @@
 ﻿using Microsoft.Extensions.Options;
-using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.BlizzardApi.Configuration;
-using WarcraftGuild.BlizzardApi.Interfaces;
-using WarcraftGuild.Core.Enums;
-using WarcraftGuildTests.Unit.BlizzardApi.Helpers;
+using WarcraftGuild.Domain.Core.Enums;
+using WarcraftGuild.Infrastructure.BlizzardApi;
+using WarcraftGuild.Infrastructure.BlizzardApi.Configuration;
+using WarcraftGuild.Tests.Unit.BlizzardApi.Helpers;
 using Xunit;
 
-namespace WarcraftGuildTests.Unit.BlizzardApi
+namespace WarcraftGuild.Tests.Unit.BlizzardApi
 {
     public class BlizzardApiReaderTests : IDisposable
     {
         public BlizzardApiConfiguration DefaultConfig { get; private set; }
         public TimeSpan DefaultAsyncDelay { get; private set; }
-        public IOptions<BlizzardApiConfiguration> DefaultConfiguration { get { return Options.Create(DefaultConfig); } }
+        public IOptions<BlizzardApiConfiguration> DefaultConfiguration
+        { get { return Options.Create(DefaultConfig); } }
 
         public BlizzardApiReaderTests()
         {
@@ -39,7 +33,6 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
             DefaultAsyncDelay = new TimeSpan(500);
         }
 
-
         public void Dispose()
         {
             GC.SuppressFinalize(this);
@@ -52,6 +45,5 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
             Assert.Throws<ArgumentNullException>(() => new BlizzardApiReader(null, webClient.WebClient));
             Assert.Throws<ArgumentNullException>(() => new BlizzardApiReader(DefaultConfiguration, null));
         }
-
     }
 }

@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using WarcraftGuild.Core.Helpers;
-using WarcraftGuild.WoW.Interfaces;
-using WarcraftGuild.WoW.Models;
+using WarcraftGuild.Domain.Core.Extensions;
+using WarcraftGuild.Domain.Interfaces;
 
-namespace WarcraftGuild.Controllers
+namespace WarcraftGuild.Application.Controllers
 {
     [Route("init")]
     [ApiController]

@@ -1,16 +1,16 @@
 ﻿using Moq;
 using System;
 using System.Net;
-using WarcraftGuild.BlizzardApi.Interfaces;
-using WarcraftGuild.BlizzardApi.Json;
+using WarcraftGuild.Domain.Interfaces;
 
-namespace WarcraftGuildTests.Unit.BlizzardApi.Helpers
+namespace WarcraftGuild.Tests.Unit.BlizzardApi.Helpers
 {
     public class WebClientMocker
     {
         public Mock<IWebClient> Mock { get; private set; }
 
-        public IWebClient WebClient { get { return Mock.Object; } }
+        public IWebClient WebClient
+        { get { return Mock.Object; } }
         public TimeSpan AsyncDelay { get; private set; }
 
         public WebClientMocker()

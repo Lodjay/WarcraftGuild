@@ -1,0 +1,13 @@
+﻿using System.Text.Json.Serialization;
+
+namespace WarcraftGuild.Domain.Core.Json
+{
+    public class GenderTextJson
+    {
+        [JsonPropertyName("male")]
+        public string Male { get; set; }
+
+        [JsonPropertyName("female")]
+        public string Female { get; set; }
+    }
+}

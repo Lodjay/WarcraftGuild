@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 
-namespace WarcraftGuild
+namespace WarcraftGuild.Application
 {
     public class Program
     {

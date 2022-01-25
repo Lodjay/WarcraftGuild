@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using WarcraftGuild.Core.Helpers;
-using WarcraftGuild.WoW.Interfaces;
-using WarcraftGuild.WoW.Models;
+using WarcraftGuild.Domain.Core.Extensions;
+using WarcraftGuild.Domain.Interfaces;
+using WarcraftGuild.Domain.WoW.Models;
 
-namespace WarcraftGuild.Controllers
+namespace WarcraftGuild.Application.Controllers
 {
     [Route("wow")]
     [ApiController]
@@ -30,7 +30,7 @@ namespace WarcraftGuild.Controllers
             {
                 _logger.LogTrace("Call GetGuild");
                 Guild guild = await _blizzardApiHandler.GetGuildBySlug(realmName.Slugify(), guildName.Slugify()).ConfigureAwait(false);
-                
+
                 return new JsonResult(guild) { StatusCode = (int)HttpStatusCode.OK };
             }
             catch (Exception ex) when (ex != null)

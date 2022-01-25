@@ -1,4 +1,4 @@
-﻿namespace WarcraftGuildTests.DataGenerator
+﻿namespace WarcraftGuild.Tests.DataGenerator
 {
     public static class CharList
     {

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace WarcraftGuildTests.DataGenerator
+namespace WarcraftGuild.Tests.DataGenerator
 {
-
     public static class RandomDataGenerator
     {
         private static RandomNumberGenerator Random { get; set; }
@@ -31,7 +27,7 @@ namespace WarcraftGuildTests.DataGenerator
         public static string RandomString(char[] chars, int minLength, int maxLength)
         {
             StringBuilder builder = new();
-            int length = ((int)GenerateUlong % (maxLength - minLength)) + minLength;
+            int length = (int)GenerateUlong % (maxLength - minLength) + minLength;
             for (int i = 0; i < length; i++)
             {
                 builder.Append(chars[(int)(GenerateUlong % (ulong)chars.Length)]);
@@ -68,7 +64,7 @@ namespace WarcraftGuildTests.DataGenerator
 
         public static uint RandomUint(uint max = uint.MaxValue)
         {
-            return (uint) GenerateUlong % max;
+            return (uint)GenerateUlong % max;
         }
     }
 }

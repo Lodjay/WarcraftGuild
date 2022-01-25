@@ -1,0 +1,16 @@
+﻿using System.Text.Json.Serialization;
+
+namespace WarcraftGuild.Domain.Core.Json
+{
+    public class AssetJson : BlizzardApiJsonResponse
+    {
+        [JsonPropertyName("key")]
+        public string Key { get; set; }
+
+        [JsonPropertyName("value")]
+        public string Value { get; set; }
+
+        [JsonPropertyName("file_data_id")]
+        public ulong Id { get; set; }
+    }
+}

@@ -6,17 +6,17 @@ using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using WarcraftGuild.BlizzardApi;
-using WarcraftGuild.BlizzardApi.Configuration;
-using WarcraftGuild.BlizzardApi.Json;
-using WarcraftGuild.Core.Enums;
-using WarcraftGuild.Core.Exceptions;
-using WarcraftGuild.Core.Extensions;
-using WarcraftGuildTests.DataGenerator.WoWJson;
-using WarcraftGuildTests.Unit.BlizzardApi.Helpers;
+using WarcraftGuild.Domain.Core.Enums;
+using WarcraftGuild.Domain.Core.Exceptions;
+using WarcraftGuild.Domain.Core.Extensions;
+using WarcraftGuild.Domain.Core.Json;
+using WarcraftGuild.Infrastructure.BlizzardApi;
+using WarcraftGuild.Infrastructure.BlizzardApi.Configuration;
+using WarcraftGuild.Tests.DataGenerator.WoWJson;
+using WarcraftGuild.Tests.Unit.BlizzardApi.Helpers;
 using Xunit;
 
-namespace WarcraftGuildTests.Unit.BlizzardApi
+namespace WarcraftGuild.Tests.Unit.BlizzardApi.GetWoWJsonTests.Realm
 {
     public class BlizzardApiReaderGetRealmTests : IClassFixture<BlizzardApiReaderTests>
     {
