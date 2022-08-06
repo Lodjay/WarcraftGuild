@@ -29,13 +29,15 @@ namespace WarcraftGuild.Controllers
             try
             {
                 _logger.LogTrace("Call GetGuild");
-                Guild guild = await _blizzardApiHandler.GetGuildBySlug(realmName.Slugify(), guildName.Slugify()).ConfigureAwait(false);
+                Guild guild = await _blizzardApiHandler.GetGuildBySlug(realmName.Slugify(), guildName.ToLower()).ConfigureAwait(false);
+                if (guild.BlizzardId == 0)
+                    return new JsonResult(guild.BlizzardApiComment) { StatusCode = (int)HttpStatusCode.InternalServerError };
                 
                 return new JsonResult(guild) { StatusCode = (int)HttpStatusCode.OK };
             }
             catch (Exception ex) when (ex != null)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical("{Exception}", ex.Message);
                 return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
