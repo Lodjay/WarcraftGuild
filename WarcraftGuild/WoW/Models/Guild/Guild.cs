@@ -31,8 +31,8 @@ namespace WarcraftGuild.WoW.Models
         public Guild(GuildJson guildJson, GuildAchievementsJson guildAchievementsJson, GuildRosterJson guildRosterJson) : this()
         {
             Load(guildJson);
-            Load(guildAchievementsJson);
-            Load(guildRosterJson);
+            LoadAchievements(guildAchievementsJson);
+            LoadRoster(guildRosterJson);
         }
 
         public void Load(GuildJson guildJson)
@@ -47,7 +47,7 @@ namespace WarcraftGuild.WoW.Models
             }
         }
 
-        public void Load(GuildAchievementsJson guildAchievementsJson)
+        public void LoadAchievements(GuildAchievementsJson guildAchievementsJson)
         {
             if (CheckJson(guildAchievementsJson))
             {
@@ -64,7 +64,7 @@ namespace WarcraftGuild.WoW.Models
             }
         }
 
-        public void Load(GuildRosterJson guildRosterJson)
+        public void LoadRoster(GuildRosterJson guildRosterJson)
         {
             if (CheckJson(guildRosterJson))
             {

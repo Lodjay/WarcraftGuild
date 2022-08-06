@@ -34,7 +34,7 @@ namespace WarcraftGuild.Controllers
             }
             catch (Exception ex) when (ex != null)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical("{Exception}", ex.Message);
                 return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
@@ -51,7 +51,7 @@ namespace WarcraftGuild.Controllers
             }
             catch (Exception ex) when (ex != null)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical("{Exception}", ex.Message);
                 return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
@@ -68,7 +68,7 @@ namespace WarcraftGuild.Controllers
             }
             catch (Exception ex) when (ex != null)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical("{Exception}", ex.Message);
                 return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
@@ -85,7 +85,7 @@ namespace WarcraftGuild.Controllers
             }
             catch (Exception ex) when (ex != null)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical("{Exception}", ex.Message);
                 return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
@@ -102,7 +102,7 @@ namespace WarcraftGuild.Controllers
             }
             catch (Exception ex) when (ex != null)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical("{Exception}", ex.Message);
                 return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
@@ -113,13 +113,13 @@ namespace WarcraftGuild.Controllers
         {
             try
             {
-                _logger.LogTrace($"Initialize API guild {guildName} from {realmName}...");
+                _logger.LogTrace("Initialize API guild {guildName} from {realmName}...", guildName, realmName);
                 await _apiInitializer.InitGuild(realmName.Slugify(), guildName.Slugify()).ConfigureAwait(false);
                 return new OkResult();
             }
             catch (Exception ex) when (ex != null)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical("{Exception}", ex.Message);
                 return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }

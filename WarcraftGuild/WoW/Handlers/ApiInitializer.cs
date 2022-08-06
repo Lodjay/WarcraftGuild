@@ -120,11 +120,11 @@ namespace WarcraftGuild.WoW.Handlers
             GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmSlug}/{guildSlug}", Namespace.Profile).ConfigureAwait(false);
             guild.Load(guildJson);
             GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmSlug}/{guildSlug}/achievements", Namespace.Profile).ConfigureAwait(false);
-            guild.Load(guildAchievementsJson);
+            guild.LoadAchievements(guildAchievementsJson);
             GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmSlug}/{guildSlug}/roster", Namespace.Profile).ConfigureAwait(false);
             if (guildRosterJson != null)
                 await FillRoster(guildRosterJson).ConfigureAwait(false);
-            guild.Load(guildRosterJson);
+            guild.LoadRoster(guildRosterJson);
             await _dbManager.Insert(guild).ConfigureAwait(false);
         }
 

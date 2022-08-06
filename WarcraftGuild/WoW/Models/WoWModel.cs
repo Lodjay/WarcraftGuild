@@ -13,7 +13,7 @@ namespace WarcraftGuild.WoW.Models
         public string BlizzardApiComment { get; set; }
         public DateTime UpdateDate { get; set; }
 
-        public void Load(BlizzardApiJsonResponse json)
+        private void Load<TJson>(TJson json) where TJson : BlizzardApiJsonResponse
         {
             switch (json.ResultCode)
             {
@@ -39,7 +39,7 @@ namespace WarcraftGuild.WoW.Models
             }
         }
 
-        protected bool CheckJson(BlizzardApiJsonResponse json)
+        protected bool CheckJson<TJson>(TJson json) where TJson : BlizzardApiJsonResponse
         {
             if (json == null)
             {
