@@ -30,7 +30,7 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
                 Locale = Locale.French,
                 ClientId = "7cface7352224419a5678ba897d81af1",
                 ClientSecret = "mJ7Wj6KnbfWugKdJ1PxiswBycvsUnrjh",
-                Limiter = new List<Limiter>
+                Limiters = new List<Limiter>
                 {
                     new Limiter{RatesPerTimespan = 36000, TimeBetweenLimitReset = new TimeSpan(1,0,0)},
                     new Limiter{RatesPerTimespan = 100, TimeBetweenLimitReset = new TimeSpan(0,0,1)},

@@ -13,7 +13,7 @@ namespace WarcraftGuild.BlizzardApi.Configuration
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string RedirectUrl { get; set; }
-        public List<Limiter> Limiter { get; set; }
+        public List<Limiter> Limiters { get; set; }
 
         private const string AUTH_URL_TEMPLATE = "https://{REGION}.battle.net/oauth/";
         private const string API_URL_TEMPLATE = "https://{REGION}.api.blizzard.com/";
@@ -28,13 +28,28 @@ namespace WarcraftGuild.BlizzardApi.Configuration
 
         public bool AnyReachedLimit()
         {
-            return Limiter.Any(i => i.IsAtRateLimit());
+            return Limiters.Any(i => i.IsAtRateLimit());
         }
 
         public void NotifyAllLimits()
         {
-            foreach (Limiter limit in Limiter)
+            foreach (Limiter limit in Limiters)
                 limit.OnHttpRequest();
+        }
+
+        public Limiter GetShorterLimiter()
+        {
+            Limiter result = null;
+            TimeSpan tmp = Limiters.FirstOrDefault().TimeBetweenLimitReset;
+            foreach (Limiter limiter in Limiters)
+            {
+                if (tmp >= limiter.TimeBetweenLimitReset)
+                {
+                    result = limiter.Clone();
+                    tmp = result.TimeBetweenLimitReset;
+                }
+            }
+            return result;
         }
 
         public string GetLocaleString()

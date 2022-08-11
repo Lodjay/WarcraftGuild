@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using WarcraftGuild.BlizzardApi;
+using WarcraftGuild.BlizzardApi.Configuration;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Enums;
+using WarcraftGuild.Core.Extensions;
 using WarcraftGuild.Core.Handlers;
 using WarcraftGuild.Core.Helpers;
 using WarcraftGuild.Core.Models;
@@ -15,29 +17,28 @@ using WarcraftGuild.WoWHeadApi;
 
 namespace WarcraftGuild.WoW.Handlers
 {
+
     public class ApiInitializer : IApiInitializer
     {
         private readonly IBlizzardApiReader _blizzardApiReader;
         private readonly IWoWHeadApiReader _wowHeadApiReader;
         private readonly IDbManager _dbManager;
+        private readonly BlizzardTaskManager _taskManager;
 
         public ApiInitializer(IBlizzardApiReader blizzardApiReader, IWoWHeadApiReader wowHeadApiReader, IDbManager dbManager)
         {
             _blizzardApiReader = blizzardApiReader ?? throw new ArgumentNullException(nameof(blizzardApiReader));
             _wowHeadApiReader = wowHeadApiReader ?? throw new ArgumentNullException(nameof(wowHeadApiReader));
             _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
+            _taskManager = new BlizzardTaskManager(_blizzardApiReader.GetShorterLimiter().Clone());
         }
 
         public async Task InitAll()
         {
-            List<Task> InitTasks = new()
-            {
-                InitRealms(),
-                InitAchievements(),
-                InitApiDatas(),
-                InitCharacterDatas(),
-            };
-            await Task.WhenAll(InitTasks).ConfigureAwait(false);
+            await InitRealms().ConfigureAwait(false);
+            await InitAchievements().ConfigureAwait(false);
+            await InitApiDatas().ConfigureAwait(false);
+            await InitCharacterDatas().ConfigureAwait(false);
         }
 
 
@@ -117,11 +118,11 @@ namespace WarcraftGuild.WoW.Handlers
                 Slug = guildSlug,
                 RealmSlug = realmSlug
             };
-            GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmSlug}/{guildSlug}", Namespace.Profile).ConfigureAwait(false);
+            GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmSlug}/{guildSlug}", Namespace.Profile, true).ConfigureAwait(false);
             guild.Load(guildJson);
-            GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmSlug}/{guildSlug}/achievements", Namespace.Profile).ConfigureAwait(false);
+            GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmSlug}/{guildSlug}/achievements", Namespace.Profile, true).ConfigureAwait(false);
             guild.LoadAchievements(guildAchievementsJson);
-            GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmSlug}/{guildSlug}/roster", Namespace.Profile).ConfigureAwait(false);
+            GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmSlug}/{guildSlug}/roster", Namespace.Profile, true).ConfigureAwait(false);
             if (guildRosterJson != null)
                 await FillRoster(guildRosterJson).ConfigureAwait(false);
             guild.LoadRoster(guildRosterJson);
@@ -134,16 +135,15 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillConnectedRealms()
         {
-            List<Task> tasks = new();
-            ConnectedRealmIndexJson index = await _blizzardApiReader.GetAsync<ConnectedRealmIndexJson>("data/wow/connected-realm/index", Namespace.Dynamic).ConfigureAwait(false);
+            ConnectedRealmIndexJson index = await _blizzardApiReader.GetAsync<ConnectedRealmIndexJson>("data/wow/connected-realm/index", Namespace.Dynamic, true).ConfigureAwait(false);
             foreach (HrefJson href in index.ConnectedRealms)
-                tasks.Add(FillConnectedRealm(href.Uri.LocalPath));
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                _taskManager.AddTask(FillConnectedRealm(href.Uri.LocalPath));
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
 
         private async Task FillConnectedRealm(string path)
         {
-            ConnectedRealmJson connectedRealmJson = await _blizzardApiReader.GetAsync<ConnectedRealmJson>(path, Namespace.Dynamic).ConfigureAwait(false);
+            ConnectedRealmJson connectedRealmJson = await _blizzardApiReader.GetAsync<ConnectedRealmJson>(path, Namespace.Dynamic, true).ConfigureAwait(false);
             await _dbManager.Insert(new ConnectedRealm(connectedRealmJson)).ConfigureAwait(false);
         }
 
@@ -153,16 +153,15 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillRealms()
         {
-            List<Task> tasks = new();
-            RealmIndexJson index = await _blizzardApiReader.GetAsync<RealmIndexJson>("data/wow/realm/index", Namespace.Dynamic).ConfigureAwait(false);
+            RealmIndexJson index = await _blizzardApiReader.GetAsync<RealmIndexJson>("data/wow/realm/index", Namespace.Dynamic, true).ConfigureAwait(false);
             foreach (RealmJson realm in index.Realms)
-                tasks.Add(FillRealm(realm.Slug));
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                _taskManager.AddTask(FillRealm(realm.Slug));
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
 
         private async Task FillRealm(string realmSlug)
         {
-            RealmJson realmJson = await _blizzardApiReader.GetAsync<RealmJson>($"data/wow/realm/{realmSlug}", Namespace.Dynamic).ConfigureAwait(false);
+            RealmJson realmJson = await _blizzardApiReader.GetAsync<RealmJson>($"data/wow/realm/{realmSlug}", Namespace.Dynamic, true).ConfigureAwait(false);
             await _dbManager.Insert(new Realm(realmJson)).ConfigureAwait(false);
         }
 
@@ -172,16 +171,15 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillAchievements()
         {
-            List<Task> tasks = new();
-            AchievementIndexJson index = await _blizzardApiReader.GetAsync<AchievementIndexJson>("data/wow/achievement/index", Namespace.Static).ConfigureAwait(false);
+            AchievementIndexJson index = await _blizzardApiReader.GetAsync<AchievementIndexJson>("data/wow/achievement/index", Namespace.Static, true).ConfigureAwait(false);
             foreach (AchievementJson achievement in index.Achievements)
-                tasks.Add(FillAchievement(achievement));
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                _taskManager.AddTask(FillAchievement(achievement), 2);
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
 
         private async Task FillAchievement(AchievementJson achievementJson)
         {
-            AchievementJson result = await _blizzardApiReader.GetAsync<AchievementJson>($"data/wow/achievement/{achievementJson.Id}", Namespace.Static).ConfigureAwait(false);
+            AchievementJson result = await _blizzardApiReader.GetAsync<AchievementJson>($"data/wow/achievement/{achievementJson.Id}", Namespace.Static, true).ConfigureAwait(false);
             if (result.ResultCode != HttpStatusCode.OK)
             {
                 achievementJson.ResultCode = result.ResultCode;
@@ -197,7 +195,7 @@ namespace WarcraftGuild.WoW.Handlers
             }
             else
             {
-                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/achievement/{achievementJson.Id}", Namespace.Static).ConfigureAwait(false);
+                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/achievement/{achievementJson.Id}", Namespace.Static, true).ConfigureAwait(false);
             }
             await _dbManager.Insert(new Achievement(result)).ConfigureAwait(false);
         }
@@ -208,16 +206,15 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillAchievementCategories()
         {
-            List<Task> tasks = new();
-            AchievementCategoryIndexJson index = await _blizzardApiReader.GetAsync<AchievementCategoryIndexJson>("data/wow/achievement-category/index", Namespace.Static).ConfigureAwait(false);
+            AchievementCategoryIndexJson index = await _blizzardApiReader.GetAsync<AchievementCategoryIndexJson>("data/wow/achievement-category/index", Namespace.Static, true).ConfigureAwait(false);
             foreach (AchievementCategoryJson categoryJson in index.Categories)
-                tasks.Add(FillAchievementCategory(categoryJson));
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                _taskManager.AddTask(FillAchievementCategory(categoryJson), 2);
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
 
         private async Task FillAchievementCategory(AchievementCategoryJson achievementCategoryJson)
         {
-            AchievementCategoryJson result = await _blizzardApiReader.GetAsync<AchievementCategoryJson>($"data/wow/achievement-category/{achievementCategoryJson.Id}", Namespace.Static).ConfigureAwait(false);
+            AchievementCategoryJson result = await _blizzardApiReader.GetAsync<AchievementCategoryJson>($"data/wow/achievement-category/{achievementCategoryJson.Id}", Namespace.Static, true).ConfigureAwait(false);
             if (result.ResultCode != HttpStatusCode.OK)
             {
                 achievementCategoryJson.ResultCode = result.ResultCode;
@@ -240,16 +237,15 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillRaces()
         {
-            List<Task> tasks = new();
-            RaceIndexJson index = await _blizzardApiReader.GetAsync<RaceIndexJson>("data/wow/playable-race/index", Namespace.Static).ConfigureAwait(false);
+            RaceIndexJson index = await _blizzardApiReader.GetAsync<RaceIndexJson>("data/wow/playable-race/index", Namespace.Static, true).ConfigureAwait(false);
             foreach (RaceJson race in index.Races)
-                tasks.Add(FillRace(race));
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                _taskManager.AddTask(FillRace(race));
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
 
         private async Task FillRace(RaceJson raceJson)
         {
-            RaceJson result = await _blizzardApiReader.GetAsync<RaceJson>($"data/wow/playable-race/{raceJson.Id}", Namespace.Static).ConfigureAwait(false);
+            RaceJson result = await _blizzardApiReader.GetAsync<RaceJson>($"data/wow/playable-race/{raceJson.Id}", Namespace.Static, true).ConfigureAwait(false);
             if (result.ResultCode != HttpStatusCode.OK)
             {
                 raceJson.ResultCode = result.ResultCode;
@@ -272,16 +268,15 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillClasses()
         {
-            List<Task> tasks = new();
-            ClassIndexJson index = await _blizzardApiReader.GetAsync<ClassIndexJson>("data/wow/playable-class/index", Namespace.Static).ConfigureAwait(false);
+            ClassIndexJson index = await _blizzardApiReader.GetAsync<ClassIndexJson>("data/wow/playable-class/index", Namespace.Static, true).ConfigureAwait(false);
             foreach (ClassJson classJson in index.Classes)
-                tasks.Add(FillClass(classJson));
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                _taskManager.AddTask(FillClass(classJson), 6);
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
 
         private async Task FillClass(ClassJson classJson)
         {
-            ClassJson result = await _blizzardApiReader.GetAsync<ClassJson>($"data/wow/playable-class/{classJson.Id}", Namespace.Static).ConfigureAwait(false);
+            ClassJson result = await _blizzardApiReader.GetAsync<ClassJson>($"data/wow/playable-class/{classJson.Id}", Namespace.Static, true).ConfigureAwait(false);
             if (result.ResultCode != HttpStatusCode.OK)
             {
                 classJson.ResultCode = result.ResultCode;
@@ -297,19 +292,19 @@ namespace WarcraftGuild.WoW.Handlers
             }
             else
             {
-                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-class/{classJson.Id}", Namespace.Static).ConfigureAwait(false);
+                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-class/{classJson.Id}", Namespace.Static, true).ConfigureAwait(false);
 
-                List<Task> subTasks = new();
+                List<Task> tasks = new();
                 foreach (SpecializationJson specializationJson in result.Specializations)
-                    subTasks.Add(FillSpecialization(specializationJson));
-                await Task.WhenAll(subTasks).ConfigureAwait(false);
+                    tasks.Add(FillSpecialization(specializationJson));
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
             await _dbManager.Insert(new Class(result)).ConfigureAwait(false);
         }
 
         private async Task FillSpecialization(SpecializationJson specializationJson)
         {
-            SpecializationJson result = await _blizzardApiReader.GetAsync<SpecializationJson>($"data/wow/playable-specialization/{specializationJson.Id}", Namespace.Static).ConfigureAwait(false);
+            SpecializationJson result = await _blizzardApiReader.GetAsync<SpecializationJson>($"data/wow/playable-specialization/{specializationJson.Id}", Namespace.Static, true).ConfigureAwait(false);
             if (result.ResultCode != HttpStatusCode.OK)
             {
                 specializationJson.ResultCode = result.ResultCode;
@@ -325,7 +320,7 @@ namespace WarcraftGuild.WoW.Handlers
             }
             else
             {
-                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-specialization/{specializationJson.Id}", Namespace.Static).ConfigureAwait(false);
+                result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"data/wow/media/playable-specialization/{specializationJson.Id}", Namespace.Static, true).ConfigureAwait(false);
             }
             await _dbManager.Insert(new Specialization(result)).ConfigureAwait(false);
         }
@@ -336,7 +331,6 @@ namespace WarcraftGuild.WoW.Handlers
 
         private async Task FillRoster(GuildRosterJson guildRosterJson)
         {
-            List<Task> tasks = new();
             foreach (GuildMemberJson memberJson in guildRosterJson.Members)
             {
                 if (memberJson.Member != null && memberJson.Member.Realm != null)
@@ -347,16 +341,16 @@ namespace WarcraftGuild.WoW.Handlers
                         Name = memberJson.Member.Name,
                         Realm = new RealmJson { Slug = memberJson.Member.Realm.Slug }
                     };
-                    tasks.Add(FillCharacter(characterJson));
+                    _taskManager.AddTask(FillCharacter(characterJson), 3);
                 }
             }
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
 
         private async Task FillCharacter(CharacterJson characterJson)
         {
             await _dbManager.DeleteByBlizzardId<Character>(characterJson.Id).ConfigureAwait(false);
-            CharacterJson result = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}", Namespace.Profile).ConfigureAwait(false);
+            CharacterJson result = await _blizzardApiReader.GetAsync<CharacterJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}", Namespace.Profile, true).ConfigureAwait(false);
             bool isValid;
             if (result.ResultCode != HttpStatusCode.OK)
             {
@@ -376,11 +370,11 @@ namespace WarcraftGuild.WoW.Handlers
             }
             else
             {
-                CharacterStatusJson characterStatutJson = await _blizzardApiReader.GetAsync<CharacterStatusJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/status", Namespace.Profile).ConfigureAwait(false);
+                CharacterStatusJson characterStatutJson = await _blizzardApiReader.GetAsync<CharacterStatusJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/status", Namespace.Profile, true).ConfigureAwait(false);
                 isValid = characterStatutJson.ResultCode == HttpStatusCode.OK && characterStatutJson.IsValid && characterStatutJson.Id == characterJson.Id;
                 if (isValid)
                 {
-                    result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/character-media", Namespace.Profile).ConfigureAwait(false);
+                    result.Media = await _blizzardApiReader.GetAsync<MediaJson>($"profile/wow/character/{characterJson.Realm.Slug}/{characterJson.Name.ToLower()}/character-media", Namespace.Profile, true).ConfigureAwait(false);
                 }
                 else
                 {
@@ -410,10 +404,9 @@ namespace WarcraftGuild.WoW.Handlers
 
         public async Task InitLocaleString()
         {
-            List<Task> tasks = new();
             foreach (LocaleString locale in LocaleStringInitializer.Generate())
-                tasks.Add(_dbManager.Insert(locale));
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                _taskManager.AddTask(_dbManager.Insert(locale));
+            await _taskManager.RunTaskes().ConfigureAwait(false);
         }
         #endregion
 
