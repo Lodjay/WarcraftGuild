@@ -27,9 +27,9 @@ namespace WarcraftGuild.BlizzardApi
             _webClient = webClient ?? throw new ArgumentNullException(nameof(webClient));
         }
 
-        public async Task<string> GetJsonAsync(string query, Namespace? ns = null)
+        public async Task<string> GetJsonAsync(string query, Namespace? ns = null, bool force = false)
         {
-            await Check().ConfigureAwait(false);
+            await Check(force).ConfigureAwait(false);
             string urlRequest = ParsePath(query, ns);
             IApiResponse response = await _webClient.MakeApiRequestAsync(new Uri(_config.GetApiUrl(), urlRequest).AbsoluteUri);
             
@@ -44,9 +44,9 @@ namespace WarcraftGuild.BlizzardApi
             }
         }
 
-        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null) where WoWJson : BlizzardApiJsonResponse, new()
+        public async Task<WoWJson> GetAsync<WoWJson>(string query, Namespace? ns = null, bool force = false) where WoWJson : BlizzardApiJsonResponse, new()
         {
-            await Check().ConfigureAwait(false);
+            await Check(force).ConfigureAwait(false);
             string urlRequest = ParsePath(query, ns);
             IApiResponse response = await _webClient.MakeApiRequestAsync(new Uri(_config.GetApiUrl(), urlRequest).AbsoluteUri);
             switch (response.GetStatusCode())
@@ -67,9 +67,9 @@ namespace WarcraftGuild.BlizzardApi
             }
         }
 
-        public async Task Check()
+        public async Task Check(bool force = false)
         {
-            ThrowIfInvalidRequest();
+            ThrowIfInvalidRequest(force);
             if (HasTokenExpired())
                 await SendTokenRequest();
         }
@@ -102,12 +102,30 @@ namespace WarcraftGuild.BlizzardApi
             };
         }
 
-        private void ThrowIfInvalidRequest()
+        public Limiter GetShorterLimiter()
+        {
+            return _config.GetShorterLimiter();
+        }
+
+        private void CheckTimeLimit(bool force = false)
         {
             if (_config.AnyReachedLimit())
-                throw new RateLimitReachedException("http request was blocked by RateLimiter");
+            {
+                if (force)
+                {
+                    Task.Delay(GetShorterLimiter().TimeBetweenLimitReset);
+                    CheckTimeLimit(force);
+                }
+                else
+                    throw new RateLimitReachedException("http request was blocked by RateLimiter");
+            }
             else
                 _config.NotifyAllLimits();
+        }
+
+        private void ThrowIfInvalidRequest(bool force = false)
+        {
+            CheckTimeLimit(force);
         }
 
         private bool HasTokenExpired()

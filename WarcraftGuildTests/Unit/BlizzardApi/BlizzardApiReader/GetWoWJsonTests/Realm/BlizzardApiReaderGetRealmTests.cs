@@ -47,7 +47,7 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
         public async Task GetJson_BreakLimit()
         {
             BlizzardApiConfiguration config = BlizzardApiReaderTests.DefaultConfig.Clone();
-            config.Limiter = new List<Limiter>
+            config.Limiters = new List<Limiter>
             {
                 new Limiter{RatesPerTimespan = 10, TimeBetweenLimitReset = new TimeSpan(0,0,5)},
             };
@@ -57,7 +57,7 @@ namespace WarcraftGuildTests.Unit.BlizzardApi
             BlizzardApiReader api = new(Options.Create(config), webClient.WebClient);
 
             List<Exception> exceptions = new();
-            int count = config.Limiter.First().RatesPerTimespan;
+            int count = config.Limiters.First().RatesPerTimespan;
             for (int i = 0; i < count + 1; i++)
             {
                 Exception ex = await Record.ExceptionAsync(() => api.GetAsync<RealmJson>("test", Namespace.Static)).ConfigureAwait(false);
