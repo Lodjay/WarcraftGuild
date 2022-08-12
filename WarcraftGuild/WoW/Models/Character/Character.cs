@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WarcraftGuild.BlizzardApi.Json;
@@ -13,6 +15,7 @@ namespace WarcraftGuild.WoW.Models
         public Faction Faction { get; set; }
         public Gender Gender { get; set; }
         public Race Race { get; set; }
+        [BsonRepresentation(BsonType.Int32, AllowOverflow = true)]
         public uint ClassID { get; set; }
         public ushort Level { get; set; }
         public List<AchievementCompletion> Achievements { get; set; }
@@ -21,6 +24,7 @@ namespace WarcraftGuild.WoW.Models
         public Uri Inset { get; set; }
         public Uri Main { get; set; }
         public Uri MainRaw { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong? MainId { get; set; }
         public Role MainRole { get; set; }
         public string Description { get; set; }

@@ -10,13 +10,13 @@ namespace WarcraftGuild.WoW.Models
     public class Guild : WoWModel
     {
         public string Name { get; set; }
-        public string Slug { get; set; }
+        public string Tag { get; set; }
         public string RealmSlug { get; set; }
         public GuildCrest Crest { get; set; }
         public Faction Faction { get; set; }
         public DateTime CreationDate { get; set; }
-        public uint AchievementCount { get; set; }
-        public uint AchievementPoints { get; set; }
+        public long AchievementCount { get; set; }
+        public long AchievementPoints { get; set; }
         public List<AchievementCompletion> Achievements { get; set; }
         public List<AchievementCategoryCompletion> AchievementCategoryCompletion { get; set; }
         public List<GuildMember> Members { get; set; }

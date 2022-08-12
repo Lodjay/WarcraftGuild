@@ -29,7 +29,7 @@ namespace WarcraftGuild.Controllers
             try
             {
                 _logger.LogTrace("Call GetGuild");
-                Guild guild = await _blizzardApiHandler.GetGuildBySlug(realmName.Slugify(), guildName.ToLower()).ConfigureAwait(false);
+                Guild guild = await _blizzardApiHandler.GetGuildByName(realmName.Slugify(), guildName.ToLower()).ConfigureAwait(false);
                 if (guild.BlizzardId == 0)
                     return new JsonResult(guild.BlizzardApiComment) { StatusCode = (int)HttpStatusCode.InternalServerError };
                 

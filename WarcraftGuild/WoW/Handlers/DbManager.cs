@@ -120,10 +120,10 @@ namespace WarcraftGuild.WoW.Handlers
             return result.FirstOrDefault();
         }
 
-        public async Task<Guild> GetGuildBySlug(string realmSlug, string guildSlug)
+        public async Task<Guild> GetGuildByTag(string realmSlug, string guildTag)
         {
             var collection = _db.GetCollection<Guild>(typeof(Guild).Name);
-            FilterDefinition<Guild> filter = Builders<Guild>.Filter.Eq("Slug", guildSlug) & Builders<Guild>.Filter.Eq("RealmSlug", realmSlug);
+            FilterDefinition<Guild> filter = Builders<Guild>.Filter.Eq("Tag", guildTag) & Builders<Guild>.Filter.Eq("RealmSlug", realmSlug);
             var result = await collection.FindAsync(filter).ConfigureAwait(false);
             return result.FirstOrDefault();
         }

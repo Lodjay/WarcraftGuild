@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using WarcraftGuild.BlizzardApi.Json;
+using WarcraftGuild.WoW.Models.Common;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -18,11 +20,7 @@ namespace WarcraftGuild.WoW.Models
 
         public void Load(GuildCrestBackgroundJson guildCrestBackgroundJson)
         {
-            Color = Color.FromArgb(
-                (int)(guildCrestBackgroundJson.Color.ColorCode.A * 255),
-                guildCrestBackgroundJson.Color.ColorCode.R,
-                guildCrestBackgroundJson.Color.ColorCode.G,
-                guildCrestBackgroundJson.Color.ColorCode.B);
+            Color = new Color(guildCrestBackgroundJson.Color);
         }
     }
 }

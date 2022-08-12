@@ -15,7 +15,7 @@ namespace WarcraftGuild.BlizzardApi.Json
         public string Description { get; set; }
 
         [JsonPropertyName("points")]
-        public uint Points { get; set; }
+        public long Points { get; set; }
 
         [JsonPropertyName("is_account_wide")]
         public bool AccountWide { get; set; }

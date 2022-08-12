@@ -8,7 +8,7 @@ namespace WarcraftGuild.BlizzardApi.Configuration
         public TimeSpan TimeBetweenLimitReset { get; set; }
 
         private DateTime timeUntilTheNextReset;
-        private uint currentRateCounter = 0;
+        private long currentRateCounter = 0;
 
         public Limiter()
         {

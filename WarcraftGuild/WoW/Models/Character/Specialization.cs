@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WarcraftGuild.BlizzardApi.Json;
@@ -10,6 +12,7 @@ namespace WarcraftGuild.WoW.Models
     public class Specialization : WoWModel
     {
         public string Name { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong ClassId { get; set; }
         public string MaleDescription { get; set; }
         public string FemaleDescription { get; set; }

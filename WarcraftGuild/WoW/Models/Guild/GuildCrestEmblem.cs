@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using WarcraftGuild.BlizzardApi.Json;
+using WarcraftGuild.WoW.Models.Common;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -21,11 +23,7 @@ namespace WarcraftGuild.WoW.Models
         public void Load(GuildCrestEmblemJson guildCrestEmblemJson)
         {
             BlizzardId = guildCrestEmblemJson.Id;
-            Color = Color.FromArgb(
-                (int)(guildCrestEmblemJson.Color.ColorCode.A * 255),
-                guildCrestEmblemJson.Color.ColorCode.R,
-                guildCrestEmblemJson.Color.ColorCode.G,
-                guildCrestEmblemJson.Color.ColorCode.B);
+            Color = new Color(guildCrestEmblemJson.Color);
         }
     }
 }

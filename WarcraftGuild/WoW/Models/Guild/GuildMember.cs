@@ -1,4 +1,6 @@
-﻿using WarcraftGuild.BlizzardApi.Json;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
@@ -6,6 +8,7 @@ namespace WarcraftGuild.WoW.Models
     {
         public int Rank { get; set; }
         public string Comment { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong CharacterId { get; set; }
         public string CharacterName { get; set; }
         public string CharacterRealmSlug { get; set; }

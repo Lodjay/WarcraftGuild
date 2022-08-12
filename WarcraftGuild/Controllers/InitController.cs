@@ -114,13 +114,13 @@ namespace WarcraftGuild.Controllers
             try
             {
                 _logger.LogTrace("Initialize API guild {guildName} from {realmName}...", guildName, realmName);
-                await _apiInitializer.InitGuild(realmName.Slugify(), guildName.Slugify()).ConfigureAwait(false);
+                await _apiInitializer.InitGuild(realmName.Slugify(), guildName.ToLower()).ConfigureAwait(false);
                 return new OkResult();
             }
             catch (Exception ex) when (ex != null)
             {
                 _logger.LogCritical("{Exception}", ex.Message);
-                return new JsonResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+                return new JsonResult($"{ex.Message} {ex.StackTrace}") { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
     }
