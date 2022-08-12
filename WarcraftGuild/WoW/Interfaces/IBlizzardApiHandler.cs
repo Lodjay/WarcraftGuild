@@ -9,6 +9,6 @@ namespace WarcraftGuild.WoW.Interfaces
     {
         Task<ConnectedRealm> GetConnectedRealmById(ulong blizzardId, bool forceUpdate = false);
         Task<Realm> GetRealmBySlug(string slug, bool forceUpdate = false);
-        Task<Guild> GetGuildByName(string realmSlug, string guildName, bool forceUpdate = false);
+        Task<Guild> GetGuildByTag(string realmSlug, string guildTag, bool forceUpdate = false);
     }
 }

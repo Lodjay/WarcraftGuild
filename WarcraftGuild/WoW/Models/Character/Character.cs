@@ -29,7 +29,7 @@ namespace WarcraftGuild.WoW.Models
         public Role MainRole { get; set; }
         public string Description { get; set; }
 
-        public bool IsMain { get { return !MainId.HasValue; } }
+        public bool IsMain { get { return !MainId.HasValue || MainId == BlizzardId; } }
 
         public Character()
         {

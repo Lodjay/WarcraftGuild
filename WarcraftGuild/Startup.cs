@@ -17,6 +17,9 @@ using System.IO;
 using System.Reflection;
 using WarcraftGuild.WoWHeadApi.Configuration;
 using WarcraftGuild.WoWHeadApi;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System;
 
 namespace WarcraftGuild
 {
@@ -69,7 +72,7 @@ namespace WarcraftGuild
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory logger, IApiInitializer initializer)
         {
             if (env.IsDevelopment())
             {
@@ -90,6 +93,9 @@ namespace WarcraftGuild
             {
                 endpoints.MapControllers();
             });
+
+            initializer.InitAll();
         }
+
     }
 }
