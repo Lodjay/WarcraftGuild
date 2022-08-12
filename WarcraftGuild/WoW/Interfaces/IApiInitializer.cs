@@ -12,6 +12,6 @@ namespace WarcraftGuild.WoW.Interfaces
         Task InitCharacterDatas();
         Task InitApiDatas();
 
-        Task InitGuild(string realmSlug, string guildSlug);
+        Task InitGuild(string realmSlug, string guildTag);
     }
 }

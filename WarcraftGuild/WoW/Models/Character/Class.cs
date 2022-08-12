@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WarcraftGuild.BlizzardApi.Json;
@@ -13,6 +15,7 @@ namespace WarcraftGuild.WoW.Models
         public string MaleName { get; set; }
         public string FemaleName { get; set; }
         public string PowerType { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public List<ulong> SpecializationList { get; set; }
         public Uri Icon { get; set; }
 

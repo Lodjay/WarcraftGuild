@@ -5,7 +5,7 @@ namespace WarcraftGuild.BlizzardApi.Json
     public class ItemIndexJson : BlizzardApiJsonResponse
     {
         [JsonPropertyName("id")]
-        public uint Id { get; set; }
+        public long Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }

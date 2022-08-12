@@ -44,17 +44,18 @@ namespace WarcraftGuild.WoW.Handlers
             return realm;
         }
 
-        public async Task<Guild> GetGuildBySlug(string realmSlug, string guildSlug, bool forceUpdate = false)
+        public async Task<Guild> GetGuildByName(string realmSlug, string guildTag, bool forceUpdate = false)
         {
             Realm realm = await GetRealmBySlug(realmSlug, forceUpdate).ConfigureAwait(false);
-            Guild guild = forceUpdate ? null : await _dbManager.GetGuildBySlug(realm.Slug, guildSlug).ConfigureAwait(false);
+            Guild guild = forceUpdate ? null : await _dbManager.GetGuildByTag(realm.Slug, guildTag).ConfigureAwait(false);
             bool update = forceUpdate || await CheckDbData(guild).ConfigureAwait(false);
             if (update)
             {
-                guild = await DbInsertFromApi<Guild, GuildJson>($"data/wow/guild/{realm.Slug}/{guildSlug}", Namespace.Profile).ConfigureAwait(false);
-                guild.Slug = guildSlug;
-                guild.LoadAchievements(await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realm.Slug}/{guildSlug}/achievements", Namespace.Profile).ConfigureAwait(false));
-                guild.LoadRoster(await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realm.Slug}/{guildSlug}/roster ", Namespace.Profile).ConfigureAwait(false));
+                guild = await DbInsertFromApi<Guild, GuildJson>($"data/wow/guild/{realm.Slug}/{guildTag}", Namespace.Profile).ConfigureAwait(false);
+                guild.RealmSlug = realmSlug;
+                guild.Tag = guildTag;
+                guild.LoadAchievements(await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realm.Slug}/{guildTag}/achievements", Namespace.Profile).ConfigureAwait(false));
+                guild.LoadRoster(await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realm.Slug}/{guildTag}/roster ", Namespace.Profile).ConfigureAwait(false));
             }
             return guild;
         }
@@ -69,7 +70,8 @@ namespace WarcraftGuild.WoW.Handlers
         {
             if (model == null)
                 return true;
-            if (model.UpdateDate.AddDays(_config.DataExpiryDays) > DateTime.Now)
+            DateTime expirationDate = model.UpdateDate.AddDays(_config.DataExpiryDays);
+            if (expirationDate <= DateTime.Now)
             {
                 await _dbManager.Delete(model).ConfigureAwait(false);
                 return true;

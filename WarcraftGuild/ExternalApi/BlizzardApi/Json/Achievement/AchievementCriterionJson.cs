@@ -13,7 +13,7 @@ namespace WarcraftGuild.BlizzardApi.Json
         public string Description { get; set; }
 
         [JsonPropertyName("amount")]
-        public uint Amount { get; set; }
+        public long Amount { get; set; }
 
         [JsonPropertyName("show_progress_bar")]
         public bool ProgressBar { get; set; }

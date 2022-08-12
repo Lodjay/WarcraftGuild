@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using WarcraftGuild.BlizzardApi.Json;
 using WarcraftGuild.Core.Helpers;
@@ -9,6 +10,7 @@ namespace WarcraftGuild.WoW.Models
     {
         [BsonId]
         public Guid Id { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong BlizzardId { get; set; }
         public string BlizzardApiComment { get; set; }
         public DateTime UpdateDate { get; set; }

@@ -89,7 +89,7 @@ namespace WarcraftGuildTests.Feature.BlizzardApi
         [Fact]
         public async Task GetConnectedRealm_Test()
         {
-            uint id = 1390;
+            long id = 1390;
             string query = $"data/wow/connected-realm/{id}";
             ConnectedRealmJson result = await Api.GetAsync<ConnectedRealmJson>(query, Namespace.Dynamic).ConfigureAwait(false);
             Assert.Equal(HttpStatusCode.OK, result.ResultCode);
@@ -157,7 +157,7 @@ namespace WarcraftGuildTests.Feature.BlizzardApi
         [Fact]
         public async Task GetRace_Test()
         {
-            uint id = 1;
+            long id = 1;
             string query = $"data/wow/playable-race/{id}";
             RaceJson result = await Api.GetAsync<RaceJson>(query, Namespace.Static).ConfigureAwait(false);
             Assert.Equal(HttpStatusCode.OK, result.ResultCode);
@@ -178,7 +178,7 @@ namespace WarcraftGuildTests.Feature.BlizzardApi
         [Fact]
         public async Task GetClass_Test()
         {
-            uint id = 1;
+            long id = 1;
             string query = $"data/wow/playable-class/{id}";
             ClassJson result = await Api.GetAsync<ClassJson>(query, Namespace.Static).ConfigureAwait(false);
             MediaJson media = await Api.GetAsync<MediaJson>($"data/wow/media/playable-class/{id}", Namespace.Static).ConfigureAwait(false);

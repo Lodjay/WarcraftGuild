@@ -1,12 +1,15 @@
-﻿using WarcraftGuild.BlizzardApi.Json;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
     public class AchievementCategoryCompletion
     {
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong CategoryId { get; set; }
-        public uint Quantity { get; set; }
-        public uint Points { get; set; }
+        public long Quantity { get; set; }
+        public long Points { get; set; }
 
         public AchievementCategoryCompletion()
         {

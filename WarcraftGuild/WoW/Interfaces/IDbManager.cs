@@ -33,7 +33,13 @@ namespace WarcraftGuild.WoW.Interfaces
 
         #region Specific
         Task<Realm> GetRealmBySlug(string slug);
-        Task<Guild> GetGuildBySlug(string realmSlug, string guildSlug);
+        /// <summary>
+        /// Get Guild By tag.
+        /// </summary>
+        /// <param name="realmSlug">Realm Slug</param>
+        /// <param name="guildTag">Guild tag (lowercase name)</param>
+        /// <returns><see cref="Guid"/></returns>
+        Task<Guild> GetGuildByTag(string realmSlug, string guildTag);
         #endregion
 
         #region NativeDatas

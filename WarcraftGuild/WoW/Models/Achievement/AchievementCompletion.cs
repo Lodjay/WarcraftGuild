@@ -1,10 +1,13 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
 {
     public class AchievementCompletion
     {
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong AchievementId { get; set; }
         public DateTime? CompletionDate { get; set; }
         public AchievementCriterionCompletion Criteria { get; set; }

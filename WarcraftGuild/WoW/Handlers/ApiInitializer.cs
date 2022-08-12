@@ -105,7 +105,7 @@ namespace WarcraftGuild.WoW.Handlers
             await Task.WhenAll(InitTasks).ConfigureAwait(false);
         }
 
-        public async Task InitGuild(string realmSlug, string guildSlug)
+        public async Task InitGuild(string realmSlug, string guildTag)
         {
             List<Task> DropTasks = new()
             {
@@ -115,14 +115,14 @@ namespace WarcraftGuild.WoW.Handlers
             await Task.WhenAll(DropTasks).ConfigureAwait(false);
             Guild guild = new()
             {
-                Slug = guildSlug,
+                Tag = guildTag,
                 RealmSlug = realmSlug
             };
-            GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmSlug}/{guildSlug}", Namespace.Profile, true).ConfigureAwait(false);
+            GuildJson guildJson = await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realmSlug}/{guildTag}", Namespace.Profile, true).ConfigureAwait(false);
             guild.Load(guildJson);
-            GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmSlug}/{guildSlug}/achievements", Namespace.Profile, true).ConfigureAwait(false);
+            GuildAchievementsJson guildAchievementsJson = await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realmSlug}/{guildTag}/achievements", Namespace.Profile, true).ConfigureAwait(false);
             guild.LoadAchievements(guildAchievementsJson);
-            GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmSlug}/{guildSlug}/roster", Namespace.Profile, true).ConfigureAwait(false);
+            GuildRosterJson guildRosterJson = await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realmSlug}/{guildTag}/roster", Namespace.Profile, true).ConfigureAwait(false);
             if (guildRosterJson != null)
                 await FillRoster(guildRosterJson).ConfigureAwait(false);
             guild.LoadRoster(guildRosterJson);

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 using WarcraftGuild.BlizzardApi.Json;
 
 namespace WarcraftGuild.WoW.Models
@@ -8,7 +10,9 @@ namespace WarcraftGuild.WoW.Models
         public string Name { get; set; }
         public bool GuildCategory { get; set; }
         public int Order { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong ParentId { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public List<ulong> AchievementList { get; set; }
 
         public AchievementCategory()

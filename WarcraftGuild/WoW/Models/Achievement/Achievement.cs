@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Linq;
 using WarcraftGuild.BlizzardApi.Json;
 
@@ -8,11 +10,13 @@ namespace WarcraftGuild.WoW.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public uint Points { get; set; }
+        public long Points { get; set; }
         public bool AccountWide { get; set; }
         public int Order { get; set; }
         public AchievementCriterion Criterion { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong CategoryId { get; set; }
+        [BsonRepresentation(BsonType.Int64, AllowOverflow = true)]
         public ulong PrerequisiteId { get; set; }
         public Uri Icon { get; set; }
 

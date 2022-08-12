@@ -9,9 +9,9 @@ namespace WarcraftGuild.BlizzardApi.Json
         public AchievementCategoryJson Category { get; set; }
 
         [JsonPropertyName("quantity")]
-        public uint Quantity { get; set; }
+        public long Quantity { get; set; }
 
         [JsonPropertyName("points")]
-        public uint Points { get; set; }
+        public long Points { get; set; }
     }
 }
