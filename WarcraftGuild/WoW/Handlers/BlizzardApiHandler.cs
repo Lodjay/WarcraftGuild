@@ -44,18 +44,20 @@ namespace WarcraftGuild.WoW.Handlers
             return realm;
         }
 
-        public async Task<Guild> GetGuildByName(string realmSlug, string guildTag, bool forceUpdate = false)
+        public async Task<Guild> GetGuildByTag(string realmSlug, string guildTag, bool forceUpdate = false)
         {
             Realm realm = await GetRealmBySlug(realmSlug, forceUpdate).ConfigureAwait(false);
             Guild guild = forceUpdate ? null : await _dbManager.GetGuildByTag(realm.Slug, guildTag).ConfigureAwait(false);
             bool update = forceUpdate || await CheckDbData(guild).ConfigureAwait(false);
             if (update)
             {
-                guild = await DbInsertFromApi<Guild, GuildJson>($"data/wow/guild/{realm.Slug}/{guildTag}", Namespace.Profile).ConfigureAwait(false);
+                guild = new Guild();
+                guild.Load(await _blizzardApiReader.GetAsync<GuildJson>($"data/wow/guild/{realm.Slug}/{guildTag}/ ", Namespace.Profile).ConfigureAwait(false));
                 guild.RealmSlug = realmSlug;
                 guild.Tag = guildTag;
                 guild.LoadAchievements(await _blizzardApiReader.GetAsync<GuildAchievementsJson>($"data/wow/guild/{realm.Slug}/{guildTag}/achievements", Namespace.Profile).ConfigureAwait(false));
                 guild.LoadRoster(await _blizzardApiReader.GetAsync<GuildRosterJson>($"data/wow/guild/{realm.Slug}/{guildTag}/roster ", Namespace.Profile).ConfigureAwait(false));
+
             }
             return guild;
         }
